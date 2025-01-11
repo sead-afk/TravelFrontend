@@ -1,13 +1,13 @@
-document.addEventListener("DOMContentLoaded", () => {
+//document.addEventListener("DOMContentLoaded", () => {
     const hotelList = document.getElementById("hotel-list");
 
     // Replace this URL with your backend API endpoint
-    const apiUrl = "http://localhost:8080/api/hotels/";
+    const hotelApiUrl = "http://localhost:8080/api/hotels/";
 
     // Fetch the hotel data
-    const token = localStorage.getItem("authToken"); // Retrieve the token from localStorage
+    //const token = localStorage.getItem("authToken"); // Retrieve the token from localStorage
 
-    fetch(apiUrl)
+    fetch(hotelApiUrl)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return response.json();
         })
         .then(data => {
+            console.log(data);
             if (data.length === 0) {
                 hotelList.innerHTML = "<p>No hotels found.</p>";
                 return;
@@ -44,5 +45,5 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => {
             console.error("Error fetching hotel data:", error);
             hotelList.innerHTML = `<p class="text-danger">Failed to load hotels. Please try again later.</p>`;
-        });
+ //       });
 });

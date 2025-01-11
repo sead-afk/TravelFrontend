@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+//document.addEventListener("DOMContentLoaded", () => {
     const registerForm = document.getElementById("registerForm");
     const registerError = document.getElementById("registerError");
 
@@ -47,10 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Response data:", data);
 
             alert("Registration successful! Redirecting to home...");
-            window.location.href = "login.html";
+            location.hash = "#login";
         } catch (error) {
             console.error("Error during registration:", error);
             registerError.textContent = "Unable to connect to the server. Please try again later.";
         }
     });
-});
+//});

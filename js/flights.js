@@ -1,13 +1,13 @@
-document.addEventListener("DOMContentLoaded", () => {
+//document.addEventListener("DOMContentLoaded", () => {
     const flightList = document.getElementById("flight-list");
 
     // Replace this URL with your backend API endpoint
-    const apiUrl = "http://localhost:8080/api/flights/";
+    const flightApiUrl = "http://localhost:8080/api/flights/";
 
     // Fetch the flight data
-    const token = localStorage.getItem("authToken"); // Retrieve the token from localStorage
+    //const token = localStorage.getItem("authToken"); // Retrieve the token from localStorage
 
-    fetch(apiUrl)
+    fetch(flightApiUrl)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -46,4 +46,4 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error fetching flight data:", error);
             flightList.innerHTML = `<p class="text-danger">Failed to load flights. Please try again later.</p>`;
         });
-});
+//});
