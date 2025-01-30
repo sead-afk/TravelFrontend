@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<body id="page-top">
+<form id="bookingForm" class="user">
+    <select id="type" class="form-control" onchange="updateDropdowns(this.value)">
+        <option value="">Select Type</option>
+        <option value="HOTEL">Hotel</option>
+        <option value="FLIGHT">Flight</option>
+    </select>
+
+    <div id="hotelDropdownContainer" style="display: none;">
+        <label for="hotelDropdown">Select Hotel</label>
+        <select id="hotelDropdown" class="form-control"></select>
+    </div>
+
+    <div id="flightDropdownContainer" style="display: none;">
+        <label for="flightDropdown">Select Flight</label>
+        <select id="flightDropdown" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" class="form-control" placeholder="Enter amount" required>
+    </div>
+
+    <p id="bookingError" class="text-danger text-center"></p> <!-- Error message placeholder -->
+
+    <button type="submit" class="btn btn-primary btn-user btn-block">
+        Create Booking
+    </button>
+</form>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="js/booking.js"></script>
+</body>
+</html>

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotels - Travel App</title>
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
+
 <body id="page-top">
 
 <div id="wrapper">
-<!--    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">-->
-<!--        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">-->
-<!--            <div class="sidebar-brand-icon rotate-n-15">-->
-<!--                <i class="fas fa-plane"></i>-->
-<!--            </div>-->
-<!--            <div class="sidebar-brand-text mx-3">Travel App</div>-->
-<!--        </a>-->
-<!--    </ul>-->
-
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
             <div class="container-fluid">
                 <h1 class="h3 mb-4 text-gray-800">Available Hotels</h1>
+
+                <!-- Search Bar -->
+                <div class="form-group mb-4">
+                    <input type="text" id="hotel-search-input" class="form-control" placeholder="Search by name or location">
+                </div>
+
                 <div class="row" id="hotel-list">
                     <!-- Dynamic hotel cards will be inserted here -->
                 </div>
@@ -31,8 +31,48 @@
     </div>
 </div>
 
+<!-- Modal for booking confirmation -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-hotel-name">Hotel Name</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="room-select">Select Room</label>
+                    <select id="room-select" class="form-control">
+                        <!-- Room options will be added dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="start-date">Start Date</label>
+                    <input type="date" id="start-date" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="end-date">End Date</label>
+                    <input type="date" id="end-date" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="confirm-booking" class="btn btn-primary">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
 <script src="js/hotels.js"></script>
+
 </body>
+
 </html>
+

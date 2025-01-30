@@ -14,6 +14,18 @@
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
 
+        console.log("Password:", password);
+        console.log("Confirm Password:", confirmPassword);
+
+        // Strong password regex
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        // Validate password strength
+        if (!passwordRegex.test(password)) {
+            registerError.textContent = "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+            return;
+        }
+
         // Validate passwords match
         if (password !== confirmPassword) {
             registerError.textContent = "Passwords do not match.";
@@ -21,6 +33,15 @@
         }
 
         const registerUrl = "http://localhost:8080/api/auth/register";
+        const bodyJson= JSON.stringify(
+            { userType:userType,
+                firstName:firstName,
+                lastName: lastName,
+                email:email,
+                username: email,
+                password: password,
+                uniqueUsername: username
+        });
 
         try {
             const response = await fetch(registerUrl, {
@@ -28,7 +49,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userType, firstName, lastName, email, username, password }),
+                body: bodyJson,
             });
 
             console.log(`Response status: ${response.status}`);

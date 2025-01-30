@@ -1,46 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking - Travel App</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+</head>
 <body id="page-top">
-<form id="bookingForm" class="user">
-    <select id="type" class="form-control" onchange="updateDropdowns(this.value)">
-        <option value="">Select Type</option>
-        <option value="HOTEL">Hotel</option>
-        <option value="FLIGHT">Flight</option>
-    </select>
+<div class="container mt-4">
+    <!-- Booking Title -->
+    <h1 id="booking-title" class="mb-4">Booking</h1>
 
-    <div id="hotelDropdownContainer" style="display: none;">
-        <label for="hotelDropdown">Select Hotel</label>
-        <select id="hotelDropdown" class="form-control"></select>
-    </div>
+    <!-- Error Message -->
+    <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
 
-    <div id="flightDropdownContainer" style="display: none;">
-        <label for="flightDropdown">Select Flight</label>
-        <select id="flightDropdown" class="form-control"></select>
-    </div>
+    <!-- Booking Form -->
+    <form id="booking-form">
+        <div class="form-group">
+            <!-- Dynamic Field for Hotel/Flight -->
+            <label for="item-name">Selected Item</label>
+            <input type="text" id="item-name" class="form-control" disabled>
+        </div>
 
-    <div class="form-group">
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" class="form-control" required>
-    </div>
+        <!-- Room Selector (visible for hotels only) -->
+        <div id="hotel-options" class="form-group d-none">
+            <label for="room-select">Choose a Room</label>
+            <select id="room-select" class="form-control">
+                <option value="">Select a room</option>
+                <option value="standard">Standard Room</option>
+                <option value="deluxe">Deluxe Room</option>
+                <option value="suite">Suite</option>
+            </select>
+        </div>
 
-    <div class="form-group">
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" class="form-control" required>
-    </div>
+        <!-- Flight Details (visible for flights only) -->
+        <div id="flight-details" class="form-group d-none">
+            <p id="flight-info"></p>
+        </div>
 
-    <div class="form-group">
-        <label for="amount">Amount:</label>
-        <input type="number" id="amount" class="form-control" placeholder="Enter amount" required>
-    </div>
+        <!-- Common Booking Fields -->
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="guests">Number of Guests</label>
+            <input type="number" id="guests" name="guests" class="form-control" min="1" max="10" required>
+        </div>
 
-    <p id="bookingError" class="text-danger text-center"></p> <!-- Error message placeholder -->
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-block">Confirm Booking</button>
+    </form>
+</div>
 
-    <button type="submit" class="btn btn-primary btn-user btn-block">
-        Create Booking
-    </button>
-</form>
+<!-- Scripts -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
-<script src="js/booking.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Retrieve booking data from sessionStorage
+        const bookingData = JSON.parse(sessionStorage.getItem("bookingData"));
+
+        if (!bookingData) {
+            // Display error message if no booking data is available
+            const errorMessage = document.getElementById("error-message");
+            errorMessage.textContent = "No booking data found. Please go back and select an item to book.";
+            errorMessage.classList.remove("d-none");
+            document.getElementById("booking-form").classList.add("d-none");
+            return;
+        }
+
+        // Populate form based on booking data
+        const { type, hotelId, hotelName } = bookingData;
+
+        document.getElementById("item-name").value = type === "hotel" ? hotelName : "Flight";
+        document.getElementById("booking-title").textContent = `Booking ${type === "hotel" ? hotelName : "Flight"}`;
+
+        if (type === "hotel") {
+            // Show hotel-specific options
+            document.getElementById("hotel-options").classList.remove("d-none");
+        } else if (type === "flight") {
+            // Show flight-specific details
+            const flightDetails = document.getElementById("flight-details");
+            flightDetails.innerHTML = `
+                <strong>Flight ID:</strong> ${hotelId} <br>
+                <strong>Flight Name:</strong> ${hotelName}
+            `;
+            flightDetails.classList.remove("d-none");
+        }
+
+        // Handle form submission
+        const bookingForm = document.getElementById("booking-form");
+        bookingForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            alert("Booking confirmed!");
+            sessionStorage.removeItem("bookingData");
+            location.href = "index.html"; // Redirect to the homepage after booking
+        });
+    });
+</script>
 </body>
 </html>
+
