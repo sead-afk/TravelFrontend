@@ -32,7 +32,7 @@
             return;
         }
 
-        const registerUrl = "http://localhost:8080/api/auth/register";
+        const registerUrl = "https://spring-boot-travel-production.up.railway.app/api/auth/register";
         const bodyJson= JSON.stringify(
             { userType:userType,
                 firstName:firstName,

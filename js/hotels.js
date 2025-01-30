@@ -185,7 +185,7 @@ document.getElementById("confirm-booking").addEventListener("click", async () =>
     console.log("Booking payload:", bookingDetails);
 
     try {
-        const response = await fetch("http://localhost:8080/api/bookings/add", {
+        const response = await fetch("https://spring-boot-travel-production.up.railway.app/api/bookings/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

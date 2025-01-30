@@ -6,7 +6,7 @@ async function loadUserProfile() {
         if (!token) {
             throw new Error("No token found. Please login.");
         }
-        const userResponse = await fetch('http://localhost:8080/api/users/profile', {
+        const userResponse = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/profile', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -23,7 +23,7 @@ async function loadUserProfile() {
         document.getElementById('profile-email').innerText = user.email;
 
         // Fetch and display bookings
-        const bookingResponse = await fetch(`http://localhost:8080/api/bookings/user/${user.username}`, {
+        const bookingResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/user/${user.username}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -41,7 +41,7 @@ async function loadUserProfile() {
             const flightRow = document.createElement('tr');
             const flightResource = booking.resourceid;
 
-            fetch(`http://localhost:8080/api/flights/${flightResource}`)
+            fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightResource}`)
                 .then(response => response.json())
                 .then(flight => {
                     const flightDetails = flight.tickets.find(ticket => ticket.id === booking.details);
@@ -66,7 +66,7 @@ async function loadUserProfile() {
         hotelBookings.forEach(booking => {
             const hotelResource = booking.resourceid;
 
-            fetch(`http://localhost:8080/api/hotels/${hotelResource}`)
+            fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`)
                 .then(response => response.json())
                 .then(hotel => {
                     const room = hotel.rooms.find(r => r.id === booking.details);

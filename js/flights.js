@@ -3,7 +3,7 @@ const flightList = document.getElementById("flight-list");
 const flightSearchInput = document.getElementById("flight-search-input");
 
 // Replace this URL with your backend API endpoint
-const flightApiUrl = "http://localhost:8080/api/flights/";
+const flightApiUrl = "https://spring-boot-travel-production.up.railway.app/api/flights/";
 
 // Fetch the flight data
 fetch(flightApiUrl)
@@ -73,7 +73,7 @@ function handleBookFlight(flightId, airline) {
     document.getElementById("airline").setAttribute("data-flight-id", flightId);
 
     // Fetch ticket data from the API (change the endpoint as needed)
-    fetch(`http://localhost:8080/api/flights/${flightId}/tickets`)
+    fetch(flightApiUrl + `${flightId}/tickets`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`Failed to fetch tickets for flight ID ${flightId}`);
@@ -162,7 +162,7 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
 
     // Make the booking request
     try {
-        const response = await fetch("http://localhost:8080/api/bookings/add", {
+        const response = await fetch("https://spring-boot-travel-production.up.railway.app/api/bookings/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

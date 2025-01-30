@@ -21,7 +21,7 @@ loginForm.addEventListener("submit", async (event) => {
     console.log(`Email: ${email}, Password: ${password}`); // Debugging
     console.log("Payload sent to backend:", JSON.stringify({ email, password }));
 
-    const loginUrl = "http://localhost:8080/api/auth/login";
+    const loginUrl = "https://spring-boot-travel-production.up.railway.app/api/auth/login";
 
     try {
         const response = await fetch(loginUrl, {
