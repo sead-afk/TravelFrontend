@@ -11,11 +11,22 @@
 <body id="page-top">
 
 <div class="container">
-    <h1>Your Profile</h1>
-    <div id="user-info">
-        <!-- User's info will be dynamically populated here -->
+
+    <div id="profile-section" class="p-4 bg-white rounded shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">User Profile</h2>
+
         <p><strong>Username:</strong> <span id="profile-username"></span></p>
         <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p class="text-lg">Current Balance: <span id="balance-amount" class="font-bold">$0.00</span></p>
+
+        <div class="mt-4">
+            <label for="add-amount" class="block text-sm font-medium">Add Funds:</label>
+            <input type="number" id="add-amount" class="border rounded p-2 w-full mt-1" min="1" step="0.01" placeholder="Enter amount" />
+
+            <button id="update-balance-btn" class="bg-blue-500 text-white mt-3 px-4 py-2 rounded hover:bg-blue-600">
+                Update Balance
+            </button>
+        </div>
     </div>
 
     <h2>Your Flight Bookings</h2>
