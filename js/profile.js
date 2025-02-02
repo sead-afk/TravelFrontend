@@ -6,6 +6,8 @@ async function loadUserProfile() {
         if (!token) {
             throw new Error("No token found. Please login.");
         }
+
+        // Fetch user profile
         const userResponse = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/profile', {
             method: 'GET',
             headers: {
@@ -18,9 +20,11 @@ async function loadUserProfile() {
         }
 
         const user = await userResponse.json();
+
         // Populate user info
         document.getElementById('profile-username').innerText = user.uniqueUsername;
         document.getElementById('profile-email').innerText = user.email;
+        document.getElementById('balance-amount').innerText = `$${user.balance.toFixed(2)}`;
 
         // Fetch and display bookings
         const bookingResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/user/${user.username}`, {
@@ -28,6 +32,7 @@ async function loadUserProfile() {
                 'Authorization': `Bearer ${token}`
             }
         });
+
         if (!bookingResponse.ok) {
             throw new Error("Failed to fetch bookings.");
         }
@@ -86,5 +91,43 @@ async function loadUserProfile() {
     }
 }
 
+// Update user balance
+async function updateUserBalance() {
+    try {
+        const token = localStorage.getItem('jwt');
+        if (!token) {
+            throw new Error("No token found. Please login.");
+        }
+
+        const addAmount = parseFloat(document.getElementById('add-amount').value);
+
+        if (isNaN(addAmount) || addAmount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
+
+        const response = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/balance', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount: addAmount })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to update balance.");
+        }
+
+        alert("Balance updated successfully!");
+        loadUserProfile(); // Reload the profile to reflect the updated balance
+    } catch (error) {
+        console.error("Error updating balance:", error);
+    }
+}
+
+document.getElementById('update-balance-btn').addEventListener('click', updateUserBalance);
+
 loadUserProfile();
+
 
