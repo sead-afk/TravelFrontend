@@ -106,7 +106,7 @@ async function updateUserBalance() {
             return;
         }
 
-        const response = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/balance', {
+        const response = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/add-funds', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
