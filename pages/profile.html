@@ -3,88 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - Travel App</title>
+    <title>Hotels - Travel App</title>
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 </head>
+
 <body id="page-top">
 
-<div class="container mt-5">
-    <!-- Profile Section -->
-    <div id="profile-section" class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h2 class="h5 m-0 font-weight-bold text-primary">User Profile</h2>
-        </div>
-        <div class="card-body">
-            <p><strong>Username:</strong> <span id="profile-username"></span></p>
-            <p><strong>Email:</strong> <span id="profile-email"></span></p>
-            <p class="text-lg">Current Balance: <span id="balance-amount" class="font-weight-bold text-success">$0.00</span></p>
+<div class="container">
 
-            <div class="form-group mt-4">
-                <label for="add-amount" class="font-weight-medium">Add Funds:</label>
-                <input type="number" id="add-amount" class="form-control mt-1" min="1" step="0.01" placeholder="Enter amount">
-            </div>
+    <div id="profile-section" class="p-4 bg-white rounded shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">User Profile</h2>
 
-            <button id="update-balance-btn" class="btn btn-primary mt-3">
-                <i class="fas fa-wallet"></i> Update Balance
+        <p><strong>Username:</strong> <span id="profile-username"></span></p>
+        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p class="text-lg">Current Balance: <span id="balance-amount" class="font-bold">$0.00</span></p>
+
+        <div class="mt-4">
+            <label for="add-amount" class="block text-sm font-medium">Add Funds:</label>
+            <input type="number" id="add-amount" class="border rounded p-2 w-full mt-1" min="1" step="0.01" placeholder="Enter amount" />
+
+            <button id="update-balance-btn" class="bg-blue-500 text-white mt-3 px-4 py-2 rounded hover:bg-blue-600">
+                Update Balance
             </button>
         </div>
+
     </div>
 
-    <!-- Flight Bookings Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h2 class="h5 m-0 font-weight-bold text-primary">Your Flight Bookings</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-light">
-                    <tr>
-                        <th>Flight Number</th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Departure Time</th>
-                        <th>Arrival Time</th>
-                        <th>Seat Number</th>
-                        <th>Amount</th>
-                    </tr>
-                    </thead>
-                    <tbody id="flight-bookings">
-                    <!-- Flight booking history will be dynamically populated here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <h2>Your Flight Bookings</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Flight Number</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Departure Time</th>
+            <th>Arrival Time</th>
+            <th>Seat Number</th>
+            <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody id="flight-bookings">
+        <!-- Flight booking history will be dynamically populated here -->
+        </tbody>
+    </table>
 
-    <!-- Hotel Bookings Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h2 class="h5 m-0 font-weight-bold text-primary">Your Hotel Bookings</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-light">
-                    <tr>
-                        <th>Hotel Name</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Room Number</th>
-                        <th>Amenities</th>
-                        <th>Amount</th>
-                    </tr>
-                    </thead>
-                    <tbody id="hotel-bookings">
-                    <!-- Hotel booking history will be dynamically populated here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <h2>Your Hotel Bookings</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Hotel Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Room Number</th>
+            <th>Amenities</th>
+            <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody id="hotel-bookings">
+        <!-- Hotel booking history will be dynamically populated here -->
+        </tbody>
+    </table>
 </div>
-
 <script src="js/profile.js"></script>
 </body>
 </html>
