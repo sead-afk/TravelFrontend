@@ -39,6 +39,10 @@ async function loadUserProfile() {
 
         const bookings = await bookingResponse.json();
 
+        // Clear existing table rows
+        document.getElementById('flight-bookings').innerHTML = '';
+        document.getElementById('hotel-bookings').innerHTML = '';
+
         // Process and display flight bookings
         const flightBookings = bookings.filter(b => b.type === 'FLIGHT');
         const flightTableBody = document.getElementById('flight-bookings');
@@ -76,12 +80,14 @@ async function loadUserProfile() {
                 .then(hotel => {
                     const room = hotel.rooms.find(r => r.id === booking.details);
                     const row = `
-                        <td>${hotel.name}</td>
-                        <td>${booking.startDate}</td>
-                        <td>${booking.endDate}</td>
-                        <td>${room ? room.roomNumber : 'N/A'}</td>
-                        <td>${room ? room.amenities.join(', ') : 'N/A'}</td>
-                        <td>${booking.amount}</td>
+                        <tr>
+                            <td>${hotel.name}</td>
+                            <td>${booking.startDate}</td>
+                            <td>${booking.endDate}</td>
+                            <td>${room ? room.roomNumber : 'N/A'}</td>
+                            <td>${room ? room.amenities.join(', ') : 'N/A'}</td>
+                            <td>${booking.amount}</td>
+                        </tr>
                     `;
                     hotelTableBody.innerHTML += row;
                 });
@@ -90,6 +96,7 @@ async function loadUserProfile() {
         console.error("Error loading user profile:", error);
     }
 }
+
 
 // Update user balance
 async function updateUserBalance() {
