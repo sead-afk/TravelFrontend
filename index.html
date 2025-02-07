@@ -157,6 +157,10 @@
         window.location.hash = "#hotels"; // Redirect to the default route
     });
 
+    app.route("#profile", function() {
+        // This callback is called after profile.html is loaded.
+        loadUserProfile();
+    });
 
     // app.route('#booking', function () {
     //     console.log("Route detected: booking");
