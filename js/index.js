@@ -94,6 +94,8 @@
 
 // Define renderAuthLinks function in index.js
 // Define renderAuthLinks function in index.js
+import { loadUserProfile } from "./profile.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const authLinks = document.getElementById("authLinks");
     const profileNavItem = document.getElementById("profileNavItem");
@@ -149,8 +151,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderAuthLinks(); // Call once on load to initialize the navbar
 
+    handleRouteChange();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleRouteChange);
+
     // The rest of the code related to other UI features can be here
 });
+
+function handleRouteChange() {
+    const currentHash = window.location.hash;
+
+    if (currentHash === "#profile") {
+        // Call the function to load profile data
+        loadUserProfile();
+    }
+    // You can add other route handling logic here if needed
+}
 
 
 

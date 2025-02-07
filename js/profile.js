@@ -1,6 +1,6 @@
 // Assuming the JWT token is stored in localStorage
 // Fetch user info and bookings
-async function loadUserProfile() {
+export async function loadUserProfile() {
     try {
         const token = localStorage.getItem('jwt');
         if (!token) {
