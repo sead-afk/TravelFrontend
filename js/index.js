@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("logoutLink").addEventListener("click", () => {
                 localStorage.removeItem("jwt");
+                localStorage.removeItem("userId");
                 renderAuthLinks(); // Refresh the UI after logout
                 location.hash = "#login"; // Redirect to login page
             });
@@ -155,18 +156,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Listen for hash changes
     window.addEventListener("hashchange", handleRouteChange);
-
-    // The rest of the code related to other UI features can be here
 });
 
 function handleRouteChange() {
     const currentHash = window.location.hash;
 
     if (currentHash === "#profile") {
-        // Call the function to load profile data
         loadUserProfile();
     }
-    // You can add other route handling logic here if needed
+    // Additional route handling can go here for #hotels, #flights, etc.
 }
 
 

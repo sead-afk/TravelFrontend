@@ -22,9 +22,18 @@ export async function loadUserProfile() {
         const user = await userResponse.json();
 
         // Populate user info
+        // (Ensure that profile.html includes elements with these IDs)
         document.getElementById('profile-username').innerText = user.uniqueUsername;
         document.getElementById('profile-email').innerText = user.email;
         document.getElementById('balance-amount').innerText = `$${user.balance.toFixed(2)}`;
+
+        // Attach event listener for updating balance only after the element is present
+        const updateBalanceBtn = document.getElementById('update-balance-btn');
+        if (updateBalanceBtn) {
+            updateBalanceBtn.addEventListener('click', updateUserBalance);
+        } else {
+            console.warn("Element 'update-balance-btn' not found. Make sure it exists in your profile HTML.");
+        }
 
         // Fetch and display bookings
         const bookingResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/user/${user.username}`, {
@@ -39,7 +48,7 @@ export async function loadUserProfile() {
 
         const bookings = await bookingResponse.json();
 
-        // Clear existing table rows
+        // Clear existing table rows (assuming profile.html has these table bodies)
         document.getElementById('flight-bookings').innerHTML = '';
         document.getElementById('hotel-bookings').innerHTML = '';
 
@@ -50,6 +59,7 @@ export async function loadUserProfile() {
             const flightRow = document.createElement('tr');
             const flightResource = booking.resourceid;
 
+            // Fetch flight details and then append the row
             fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightResource}`)
                 .then(response => response.json())
                 .then(flight => {
@@ -65,7 +75,8 @@ export async function loadUserProfile() {
                     `;
                     flightRow.innerHTML = row;
                     flightTableBody.appendChild(flightRow);
-                });
+                })
+                .catch(err => console.error("Error fetching flight details:", err));
         });
 
         // Process and display hotel bookings
@@ -78,6 +89,7 @@ export async function loadUserProfile() {
             fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`)
                 .then(response => response.json())
                 .then(hotel => {
+                    // Find the room by its id from the hotel's rooms array
                     const room = hotel.rooms.find(r => r.id === booking.details);
                     const row = `
                         <tr>
@@ -90,15 +102,14 @@ export async function loadUserProfile() {
                         </tr>
                     `;
                     hotelTableBody.innerHTML += row;
-                });
+                })
+                .catch(err => console.error("Error fetching hotel details:", err));
         });
     } catch (error) {
         console.error("Error loading user profile:", error);
     }
 }
 
-
-// Update user balance
 async function updateUserBalance() {
     try {
         const token = localStorage.getItem('jwt');
@@ -133,8 +144,5 @@ async function updateUserBalance() {
     }
 }
 
-document.getElementById('update-balance-btn').addEventListener('click', updateUserBalance);
-
-loadUserProfile();
 
 
