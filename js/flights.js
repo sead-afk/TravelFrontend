@@ -162,7 +162,7 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
 
     // Make the booking request
     try {
-        const response = await fetch("https://spring-boot-travel-production.up.railway.app/api/bookings/add", {
+        const response = await fetch("https://spring-boot-travel-production.up.railway.app/api/flights/bookTicket", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
