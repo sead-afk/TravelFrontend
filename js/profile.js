@@ -205,7 +205,7 @@ export async function openEditBookingModal(bookingId, type) {
             return;
         }
 
-        // Fetch the booking details by bookingId from the backend
+        // Fetch the booking details by bookingId from your backend
         const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
             method: "GET",
             headers: {
@@ -219,26 +219,102 @@ export async function openEditBookingModal(bookingId, type) {
 
         const booking = await response.json();
 
-        // Populate the edit modal fields with the current booking data.
-        // Ensure that your edit modal (with id "editBookingModal") has these input fields.
-        document.getElementById("edit-booking-id").value = booking.id;
-        document.getElementById("edit-start-date").value = booking.startDate;
-        document.getElementById("edit-end-date").value = booking.endDate;
-        document.getElementById("edit-amount").value = booking.amount;
+        // Populate the edit modal fields with current booking data.
+        const editBookingIdElem = document.getElementById("edit-booking-id");
+        const editStartDateElem = document.getElementById("edit-start-date");
+        const editEndDateElem = document.getElementById("edit-end-date");
+        const editAmountElem = document.getElementById("edit-amount");
 
-        if (type === "HOTEL") {
-            document.getElementById("edit-room-number").value = booking.details;
-        } else if (type === "FLIGHT") {
-            document.getElementById("edit-seat-number").value = booking.details;
+        if (!editBookingIdElem || !editStartDateElem || !editEndDateElem || !editAmountElem) {
+            throw new Error("One or more edit modal elements not found. Please check your modal HTML.");
         }
 
-        // Open the edit modal (using Bootstrap's modal function)
+        editBookingIdElem.value = booking.id || booking._id;
+        editStartDateElem.value = booking.startDate;
+        editEndDateElem.value = booking.endDate;
+        editAmountElem.value = booking.amount;
+
+        // Show/hide type-specific fields
+        if (type === "HOTEL") {
+            document.getElementById("hotel-edit-group").style.display = "block";
+            document.getElementById("flight-edit-group").style.display = "none";
+            const editRoomNumberElem = document.getElementById("edit-room-number");
+            if (editRoomNumberElem) {
+                // If booking.details contains the room ID, you can optionally fetch room details.
+                // For now, we assume booking.details is the room number.
+                editRoomNumberElem.value = booking.details;
+            }
+        } else if (type === "FLIGHT") {
+            document.getElementById("hotel-edit-group").style.display = "none";
+            document.getElementById("flight-edit-group").style.display = "block";
+            const editSeatNumberElem = document.getElementById("edit-seat-number");
+            if (editSeatNumberElem) {
+                editSeatNumberElem.value = booking.details;
+            }
+        }
+
+        // Attach save event listener (remove previous listener if necessary)
+        const saveBtn = document.getElementById("save-edit-booking");
+        saveBtn.onclick = async function() {
+            await submitEditBooking(booking.id || booking._id);
+        };
+
+        // Open the edit modal (using Bootstrap's modal)
         $("#editBookingModal").modal("show");
     } catch (error) {
         console.error("Error opening edit booking modal:", error);
         alert("Error loading booking details for editing. Please try again.");
     }
 }
+
+/**
+ * Submits the edited booking details to update the booking.
+ * @param {string} bookingId - The booking ID.
+ */
+async function submitEditBooking(bookingId) {
+    try {
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+            alert("You must be logged in to edit a booking.");
+            return;
+        }
+
+        // Gather updated data from modal inputs
+        const updatedStartDate = document.getElementById("edit-start-date").value;
+        const updatedEndDate = document.getElementById("edit-end-date").value;
+        const updatedAmount = parseFloat(document.getElementById("edit-amount").value);
+
+        // Construct the updated booking object
+        const updatedBooking = {
+            startDate: updatedStartDate,
+            endDate: updatedEndDate,
+            amount: updatedAmount,
+            // Optionally include updated details if editable (room/seat might not change)
+        };
+
+        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(updatedBooking)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Update failed: ${response.status}`);
+        }
+
+        alert("Booking updated successfully!");
+        $("#editBookingModal").modal("hide");
+        // Optionally, refresh the user profile data to reflect changes:
+        loadUserProfile();
+    } catch (error) {
+        console.error("Error updating booking:", error);
+        alert("Error updating booking. Please try again.");
+    }
+}
+
 
 /**
  * Updates the user's balance by sending a request to the backend.
