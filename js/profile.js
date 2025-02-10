@@ -98,7 +98,7 @@ export async function loadUserProfile() {
 
             const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`);
             const jsonHotel = await response.json();
-
+            const hotel=JSON.stringify(jsonHotel);
             // Find the room in the hotel's room list using booking.details
             const room = hotel.rooms.find(r => (r.id || r._id) === booking.details);
 
@@ -119,7 +119,7 @@ export async function loadUserProfile() {
         }
 
         // After populating the tables, attach delegated event listeners
-        attachBookingActions();
+        await attachBookingActions();
     } catch (error) {
         console.error("Error loading user profile:", error);
     }
