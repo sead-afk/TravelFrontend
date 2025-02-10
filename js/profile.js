@@ -1,5 +1,7 @@
 // profile.js
 
+import {response} from "express";
+
 /**
  * Loads and renders the user's profile data, including their bookings.
  */
@@ -87,19 +89,20 @@ export async function loadUserProfile() {
 
         // Process and display hotel bookings
         const hotelBookings = bookings.filter(b => b.type === 'HOTEL');
-        hotelBookings.forEach(booking => {
+        for (const booking of hotelBookings) {
             const hotelRow = document.createElement('tr');
             hotelRow.setAttribute("data-booking-id", booking.id || booking._id);
             const hotelResource = booking.resourceid;
 
             // Fetch hotel details for this booking
-            fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`)
-                .then(response => response.json())
-                .then(hotel => {
-                    // Find the room in the hotel's room list using booking.details
-                    const room = hotel.rooms.find(r => (r.id || r._id) === booking.details);
 
-                    const rowHtml = `
+            const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`);
+            const jsonHotel = await response.json();
+
+            // Find the room in the hotel's room list using booking.details
+            const room = hotel.rooms.find(r => (r.id || r._id) === booking.details);
+
+            const rowHtml = `
                         <td>${hotel.name}</td>
                         <td>${booking.startDate}</td>
                         <td>${booking.endDate}</td>
@@ -111,11 +114,9 @@ export async function loadUserProfile() {
                             <button class="delete-booking btn btn-sm btn-danger">Delete</button>
                         </td>
                     `;
-                    hotelRow.innerHTML = rowHtml;
-                    hotelTableBody.appendChild(hotelRow);
-                })
-                .catch(err => console.error("Error fetching hotel details:", err));
-        });
+            hotelRow.innerHTML = rowHtml;
+            hotelTableBody.appendChild(hotelRow);
+        }
 
         // After populating the tables, attach delegated event listeners
         attachBookingActions();
@@ -232,7 +233,7 @@ export async function openEditBookingModal(bookingId, type) {
             endDateElem.value = booking.endDate;
             amountElem.value = booking.amount;
             // Load dropdown options for hotels and rooms
-            loadAvailableHotelsForEdit(booking.resourceid, booking.details);
+            await loadAvailableHotelsForEdit(booking.resourceid, booking.details);
             // Attach save handler for hotel modal save button
             document.getElementById("save-hotel-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "HOTEL");
@@ -273,7 +274,7 @@ function recalcHotelAmount() {
     const startDate = document.getElementById("edit-hotel-start-date").value;
     const endDate = document.getElementById("edit-hotel-end-date").value;
     if (!startDate || !endDate) return;
-    const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+    const days = Math.floor((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
     document.getElementById("edit-hotel-amount").value = price * days;
 }
 
@@ -319,7 +320,7 @@ async function submitEditBooking(bookingId, type) {
         } else if (type === "FLIGHT") {
             $("#editFlightBookingModal").modal("hide");
         }
-        loadUserProfile();
+        await loadUserProfile();
     } catch (error) {
         console.error("Error updating booking:", error);
         alert("Error updating booking. Please try again.");
@@ -347,7 +348,7 @@ async function updateUserBalance() {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ amount: addAmount })
+            body: JSON.stringify({amount: addAmount})
         });
         if (!response.ok) {
             throw new Error("Failed to update balance.");
@@ -363,7 +364,7 @@ async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
     try {
         const token = localStorage.getItem("jwt");
         const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/`, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: {"Authorization": `Bearer ${token}`}
         });
         if (!hotelResponse.ok) {
             throw new Error("Failed to fetch hotels.");
@@ -382,7 +383,7 @@ async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
         });
         // Load available rooms for the currently selected hotel
         loadAvailableRoomsForEdit(currentHotelId, currentRoomId);
-        hotelDropdown.onchange = function() {
+        hotelDropdown.onchange = function () {
             loadAvailableRoomsForEdit(this.value, null);
         };
     } catch (error) {
@@ -394,7 +395,7 @@ async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
     try {
         const token = localStorage.getItem("jwt");
         const roomResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelId}/rooms`, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: {"Authorization": `Bearer ${token}`}
         });
         if (!roomResponse.ok) {
             throw new Error("Failed to fetch rooms.");
