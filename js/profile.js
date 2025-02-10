@@ -97,10 +97,10 @@ export async function loadUserProfile() {
             const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`);
             const hotel = await hotelResponse.json();
             //const hotel=JSON.stringify(jsonHotel);
-            console.log("HOTEL: ",hotel);
             // Find the room in the hotel's room list using booking.details
-            const room = hotel.rooms.find(r => (r.id || r._id) === booking.details);
+            const room = hotel.rooms.find(r => r.id  === booking.details);
 
+            console.log("ROOM: ",room);
             const rowHtml = `
                         <td>${hotel.name}</td>
                         <td>${booking.startDate}</td>
