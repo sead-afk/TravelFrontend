@@ -45,7 +45,7 @@ export async function loadUserProfile() {
             throw new Error("Failed to fetch bookings.");
         }
         const bookings = await bookingResponse.json();
-
+        console.log("BOOKINGS: ",bookings);
         // Clear existing table rows in both flight and hotel bookings tables
         const flightTableBody = document.getElementById('flight-bookings');
         const hotelTableBody = document.getElementById('hotel-bookings');
@@ -100,7 +100,7 @@ export async function loadUserProfile() {
             // Find the room in the hotel's room list using booking.details
 
             const room = hotel.rooms.find(r => r.id  === booking.details);
-            console.log("BOOKING ID: ",booking.details,"ROOM: ",room);
+            //console.log("BOOKING ID: ",booking.details,"ROOM: ",room);
             const rowHtml = `
                         <td>${hotel.name}</td>
                         <td>${booking.startDate}</td>
@@ -296,6 +296,7 @@ async function submitEditBooking(bookingId, type) {
                 amount: parseFloat(document.getElementById("edit-hotel-amount").value),
                 details: document.getElementById("edit-room-dropdown").value
             };
+            console.log("updated booking_ ",updatedBooking);
         } else if (type === "FLIGHT") {
             updatedBooking = {
                 amount: parseFloat(document.getElementById("edit-flight-amount").value),
@@ -381,7 +382,7 @@ async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
             hotelDropdown.appendChild(option);
         });
         // Load available rooms for the currently selected hotel
-        loadAvailableRoomsForEdit(currentHotelId, currentRoomId);
+        await loadAvailableRoomsForEdit(currentHotelId, currentRoomId);
         hotelDropdown.onchange = function () {
             loadAvailableRoomsForEdit(this.value, null);
         };
