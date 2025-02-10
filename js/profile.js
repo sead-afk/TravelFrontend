@@ -350,4 +350,67 @@ async function updateUserBalance() {
     }
 }
 
+async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
+    try {
+        const token = localStorage.getItem("jwt");
+        const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/available`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!hotelResponse.ok) {
+            throw new Error("Failed to fetch hotels.");
+        }
+        const hotels = await hotelResponse.json();
+        const hotelDropdown = document.getElementById("edit-hotel-dropdown");
+        hotelDropdown.innerHTML = "";
+        hotels.forEach(hotel => {
+            const option = document.createElement("option");
+            option.value = hotel.id;
+            option.textContent = hotel.name;
+            if (hotel.id === currentHotelId) {
+                option.selected = true;
+            }
+            hotelDropdown.appendChild(option);
+        });
+        // Load available rooms for the currently selected hotel
+        loadAvailableRoomsForEdit(currentHotelId, currentRoomId);
+        hotelDropdown.onchange = function() {
+            loadAvailableRoomsForEdit(this.value, null);
+        };
+    } catch (error) {
+        console.error("Error loading available hotels:", error);
+    }
+}
+
+async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
+    try {
+        const token = localStorage.getItem("jwt");
+        const roomResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelId}/rooms`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!roomResponse.ok) {
+            throw new Error("Failed to fetch rooms.");
+        }
+        const rooms = await roomResponse.json();
+        const roomDropdown = document.getElementById("edit-room-dropdown");
+        roomDropdown.innerHTML = "";
+        rooms.forEach(room => {
+            if (!room.availability && room.id !== currentRoomId) {
+                return; // Only show available rooms unless it's the currently booked one.
+            }
+            const option = document.createElement("option");
+            option.value = room.id;
+            option.textContent = `Room ${room.roomNumber} - $${room.pricePerNight}`;
+            if (room.id === currentRoomId) {
+                option.selected = true;
+                recalcHotelAmount(); // Optionally recalc amount based on this room
+            }
+            option.setAttribute("data-price", room.pricePerNight);
+            roomDropdown.appendChild(option);
+        });
+        roomDropdown.onchange = recalcHotelAmount;
+    } catch (error) {
+        console.error("Error loading available rooms:", error);
+    }
+}
+
 
