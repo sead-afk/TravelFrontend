@@ -354,7 +354,7 @@ async function updateUserBalance() {
             throw new Error("Failed to update balance.");
         }
         alert("Balance updated successfully!");
-        loadUserProfile(); // Refresh profile data to reflect updated balance
+        await loadUserProfile(); // Refresh profile data to reflect updated balance
     } catch (error) {
         console.error("Error updating balance:", error);
     }
@@ -404,7 +404,7 @@ async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
         const roomDropdown = document.getElementById("edit-room-dropdown");
         roomDropdown.innerHTML = "";
         rooms.forEach(room => {
-            if (!room.availability && room.id !== currentRoomId) {
+            if (room.id !== currentRoomId) {
                 return; // Only show available rooms unless it's the currently booked one.
             }
             const option = document.createElement("option");
@@ -422,5 +422,77 @@ async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
         console.error("Error loading available rooms:", error);
     }
 }
+
+/**
+ * Loads available flights into the flight edit modal and then loads available seats.
+ * @param {string} currentFlightId - The current flight ID for the booking.
+ * @param {string|null} currentTicketId - The current ticket ID (if any).
+ */
+async function loadAvailableFlightsForEdit(currentFlightId, currentTicketId) {
+    try {
+        const token = localStorage.getItem("jwt");
+        const flightResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!flightResponse.ok) {
+            throw new Error("Failed to fetch flights.");
+        }
+        const flights = await flightResponse.json();
+        const flightDropdown = document.getElementById("edit-flight-dropdown");
+        flightDropdown.innerHTML = "";
+        flights.forEach(flight => {
+            const option = document.createElement("option");
+            // Use the flight ID and a display property (e.g., flightNumber)
+            option.value = flight.id;
+            option.textContent = flight.flightNumber;
+            if (flight.id === currentFlightId) {
+                option.selected = true;
+            }
+            flightDropdown.appendChild(option);
+        });
+        // Load available seats for the currently selected flight.
+        await loadAvailableSeatsForEdit(currentFlightId, currentTicketId);
+        // When the selected flight changes, reload available seats.
+        flightDropdown.onchange = function () {
+            loadAvailableSeatsForEdit(this.value, null);
+        };
+    } catch (error) {
+        console.error("Error loading available flights:", error);
+    }
+}
+
+/**
+ * Loads available seats for a flight into the flight edit modal.
+ * @param {string} flightId - The flight ID.
+ * @param {string|null} currentTicketId - The current ticket ID (if any).
+ */
+async function loadAvailableSeatsForEdit(flightId, currentTicketId) {
+    try {
+        const token = localStorage.getItem("jwt");
+        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightId}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) {
+            throw new Error("Failed to fetch flight details.");
+        }
+        const flight = await response.json();
+        const seatDropdown = document.getElementById("edit-seat-dropdown");
+        seatDropdown.innerHTML = "";
+        flight.tickets.forEach(ticket => {
+            // Only show available seats unless it is the currently booked ticket.
+            if (ticket.id !== currentTicketId) return;
+            const option = document.createElement("option");
+            option.value = ticket.id;
+            option.textContent = `Seat ${ticket.seatNumber}`;
+            if (ticket.id === currentTicketId) {
+                option.selected = true;
+            }
+            seatDropdown.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading available seats:", error);
+    }
+}
+
 
 
