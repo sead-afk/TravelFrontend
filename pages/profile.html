@@ -75,6 +75,7 @@
                         <th>Room Number</th>
                         <th>Amenities</th>
                         <th>Amount</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody id="hotel-bookings">
@@ -86,49 +87,97 @@
     </div>
 </div>
 
-<!-- Edit Booking Modal -->
-<div class="modal fade" id="editBookingModal" tabindex="-1" role="dialog" aria-labelledby="editBookingModalLabel" aria-hidden="true">
+<!-- Edit Hotel Booking Modal -->
+<div class="modal fade" id="editHotelBookingModal" tabindex="-1" role="dialog" aria-labelledby="editHotelBookingModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editBookingModalLabel">Edit Booking</h5>
+                <h5 class="modal-title" id="editHotelBookingModalLabel">Edit Hotel Booking</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Hidden field for booking id -->
-                <input type="hidden" id="edit-booking-id">
+                <!-- Hidden field for booking ID -->
+                <input type="hidden" id="edit-hotel-booking-id">
+                <!-- Dropdown to select a different hotel -->
                 <div class="form-group">
-                    <label for="edit-start-date">Start Date</label>
-                    <input type="date" id="edit-start-date" class="form-control">
+                    <label for="edit-hotel-dropdown">Select Hotel</label>
+                    <select id="edit-hotel-dropdown" class="form-control">
+                        <!-- Options populated dynamically via an API call -->
+                    </select>
+                </div>
+                <!-- Dropdown to select a room (populated based on the selected hotel) -->
+                <div class="form-group">
+                    <label for="edit-room-dropdown">Select Room</label>
+                    <select id="edit-room-dropdown" class="form-control">
+                        <!-- Options will be populated when a hotel is selected -->
+                    </select>
+                </div>
+                <!-- Date inputs -->
+                <div class="form-group">
+                    <label for="edit-hotel-start-date">Start Date</label>
+                    <input type="date" id="edit-hotel-start-date" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="edit-end-date">End Date</label>
-                    <input type="date" id="edit-end-date" class="form-control">
+                    <label for="edit-hotel-end-date">End Date</label>
+                    <input type="date" id="edit-hotel-end-date" class="form-control">
                 </div>
+                <!-- Display calculated amount (read-only) -->
                 <div class="form-group">
-                    <label for="edit-amount">Amount</label>
-                    <input type="number" id="edit-amount" class="form-control">
-                </div>
-                <!-- Fields specific to booking type -->
-                <div class="form-group" id="hotel-edit-group" style="display:none;">
-                    <label for="edit-room-number">Room Number</label>
-                    <input type="text" id="edit-room-number" class="form-control" readonly>
-                </div>
-                <div class="form-group" id="flight-edit-group" style="display:none;">
-                    <label for="edit-seat-number">Seat Number</label>
-                    <input type="text" id="edit-seat-number" class="form-control" readonly>
+                    <label for="edit-hotel-amount">Total Amount</label>
+                    <input type="number" id="edit-hotel-amount" class="form-control" readonly>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <!-- You can add a Save Changes button that triggers an update function -->
-                <button type="button" class="btn btn-primary" id="save-edit-booking">Save Changes</button>
+                <button type="button" id="save-hotel-edit" class="btn btn-primary">Save Changes</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Edit Flight Booking Modal -->
+<div class="modal fade" id="editFlightBookingModal" tabindex="-1" role="dialog" aria-labelledby="editFlightBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFlightBookingModalLabel">Edit Flight Booking</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Hidden field for booking ID -->
+                <input type="hidden" id="edit-flight-booking-id">
+                <!-- Dropdown to select a different flight -->
+                <div class="form-group">
+                    <label for="edit-flight-dropdown">Select Flight</label>
+                    <select id="edit-flight-dropdown" class="form-control">
+                        <!-- Options populated dynamically -->
+                    </select>
+                </div>
+                <!-- Dropdown to select a seat (populated based on the selected flight) -->
+                <div class="form-group">
+                    <label for="edit-seat-dropdown">Select Seat</label>
+                    <select id="edit-seat-dropdown" class="form-control">
+                        <!-- Options will be populated dynamically when flight is selected -->
+                    </select>
+                </div>
+                <!-- For flights, the amount might be calculated automatically or fixed -->
+                <div class="form-group">
+                    <label for="edit-flight-amount">Amount</label>
+                    <input type="number" id="edit-flight-amount" class="form-control" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="save-flight-edit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="js/profile.js"></script>
 </body>

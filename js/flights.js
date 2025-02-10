@@ -160,6 +160,7 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
 
     console.log("Booking payload:", bookingDetails);
 
+    let responseStatusText="";
     // Make the booking request
     try {
         const response = await fetch("https://spring-boot-travel-production.up.railway.app/api/flights/bookTicket", {
@@ -173,7 +174,9 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
 
         // Check for errors in the response
         if (!response.ok) {
+            responseStatusText = response.statusText.length === 0 ?"" : response.statusText;
             throw new Error(`Error: ${response.status} ${response.statusText}`);
+
         }
 
         const data = await response.json(); // Parse response
@@ -181,7 +184,7 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
         $("#flightBookingModal").modal("hide"); // Hide the modal on success
     } catch (error) {
         console.error("Error creating booking:", error);
-        alert("Error creating booking. Please try again later.");
+        alert(responseStatusText.length === 0 ? "Error creating booking. Please try again later.":responseStatusText);
     }
 });
 
