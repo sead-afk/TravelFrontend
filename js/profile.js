@@ -97,7 +97,8 @@ export async function loadUserProfile() {
                 .then(response => response.json())
                 .then(hotel => {
                     // Find the room in the hotel's room list using booking.details
-                    const room = hotel.rooms.find(r => r.id === booking.details);
+                    const room = hotel.rooms.find(r => (r.id || r._id) === booking.details);
+
                     const rowHtml = `
                         <td>${hotel.name}</td>
                         <td>${booking.startDate}</td>
