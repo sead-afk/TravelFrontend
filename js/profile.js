@@ -353,7 +353,7 @@ async function updateUserBalance() {
 async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
     try {
         const token = localStorage.getItem("jwt");
-        const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/available`, {
+        const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!hotelResponse.ok) {
