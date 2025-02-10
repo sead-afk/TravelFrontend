@@ -1,7 +1,5 @@
 // profile.js
 
-import {response} from "express";
-
 /**
  * Loads and renders the user's profile data, including their bookings.
  */
