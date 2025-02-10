@@ -204,68 +204,70 @@ export async function openEditBookingModal(bookingId, type) {
             alert("You must be logged in to edit a booking.");
             return;
         }
-
-        // Fetch the booking details by bookingId from your backend
         const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
             }
         });
-
         if (!response.ok) {
             throw new Error(`Failed to fetch booking details: ${response.status}`);
         }
-
         const booking = await response.json();
 
-        // Populate the edit modal fields with current booking data.
-        const editBookingIdElem = document.getElementById("edit-booking-id");
-        const editStartDateElem = document.getElementById("edit-start-date");
-        const editEndDateElem = document.getElementById("edit-end-date");
-        const editAmountElem = document.getElementById("edit-amount");
-
-        if (!editBookingIdElem || !editStartDateElem || !editEndDateElem || !editAmountElem) {
-            throw new Error("One or more edit modal elements not found. Please check your modal HTML.");
-        }
-
-        editBookingIdElem.value = booking.id || booking._id;
-        editStartDateElem.value = booking.startDate;
-        editEndDateElem.value = booking.endDate;
-        editAmountElem.value = booking.amount;
-
-        // Show/hide type-specific fields
         if (type === "HOTEL") {
-            document.getElementById("hotel-edit-group").style.display = "block";
-            document.getElementById("flight-edit-group").style.display = "none";
-            const editRoomNumberElem = document.getElementById("edit-room-number");
-            if (editRoomNumberElem) {
-                // If booking.details contains the room ID, you can optionally fetch room details.
-                // For now, we assume booking.details is the room number.
-                editRoomNumberElem.value = booking.details;
+            // Hotel modal elements
+            const bookingIdElem = document.getElementById("edit-hotel-booking-id");
+            const startDateElem = document.getElementById("edit-hotel-start-date");
+            const endDateElem = document.getElementById("edit-hotel-end-date");
+            const amountElem = document.getElementById("edit-hotel-amount");
+            const hotelDropdown = document.getElementById("edit-hotel-dropdown");
+            const roomDropdown = document.getElementById("edit-room-dropdown");
+
+            if (!bookingIdElem || !startDateElem || !endDateElem || !amountElem || !hotelDropdown || !roomDropdown) {
+                throw new Error("One or more hotel modal elements not found. Please check your modal HTML.");
             }
+
+            bookingIdElem.value = booking.id || booking._id;
+            startDateElem.value = booking.startDate;
+            endDateElem.value = booking.endDate;
+            amountElem.value = booking.amount;
+            // Load available hotels and rooms for editing
+            loadAvailableHotelsForEdit(booking.resourceid, booking.details);
+            // Attach save handler to hotel save button
+            document.getElementById("save-hotel-edit").onclick = async function () {
+                await submitEditBooking(booking.id || booking._id, "HOTEL");
+            };
+
+            $("#editHotelBookingModal").modal("show");
         } else if (type === "FLIGHT") {
-            document.getElementById("hotel-edit-group").style.display = "none";
-            document.getElementById("flight-edit-group").style.display = "block";
-            const editSeatNumberElem = document.getElementById("edit-seat-number");
-            if (editSeatNumberElem) {
-                editSeatNumberElem.value = booking.details;
+            // Flight modal elements
+            const bookingIdElem = document.getElementById("edit-flight-booking-id");
+            const amountElem = document.getElementById("edit-flight-amount");
+            const flightDropdown = document.getElementById("edit-flight-dropdown");
+            const seatDropdown = document.getElementById("edit-seat-dropdown");
+
+            if (!bookingIdElem || !amountElem || !flightDropdown || !seatDropdown) {
+                throw new Error("One or more flight modal elements not found. Please check your modal HTML.");
             }
+
+            bookingIdElem.value = booking.id || booking._id;
+            amountElem.value = booking.amount;
+            // Load available flights and seats for editing
+            loadAvailableFlightsForEdit(booking.resourceid, booking.details);
+            // Attach save handler to flight save button
+            document.getElementById("save-flight-edit").onclick = async function () {
+                await submitEditBooking(booking.id || booking._id, "FLIGHT");
+            };
+
+            $("#editFlightBookingModal").modal("show");
         }
-
-        // Attach save event listener (remove previous listener if necessary)
-        const saveBtn = document.getElementById("save-edit-booking");
-        saveBtn.onclick = async function() {
-            await submitEditBooking(booking.id || booking._id);
-        };
-
-        // Open the edit modal (using Bootstrap's modal)
-        $("#editBookingModal").modal("show");
     } catch (error) {
         console.error("Error opening edit booking modal:", error);
         alert("Error loading booking details for editing. Please try again.");
     }
 }
+
 
 /**
  * Submits the edited booking details to update the booking.
