@@ -129,7 +129,8 @@ export async function loadUserProfile() {
  */
 async function attachBookingActions() {
     // Delegated event listener for flight bookings
-    document.addEventListener('click', async function (event) {
+
+    document.getElementById('bookings-container').addEventListener('click', async function (event) {
         const target = event.target;
         let row = target.closest('tr');
         if (!row) return;
