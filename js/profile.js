@@ -175,6 +175,7 @@ async function attachBookingActions() {
  */
 async function deleteBooking(bookingId, row) {
     try {
+        console.log("Attempting to delete booking:", bookingId);
         const token = localStorage.getItem("jwt");
         const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
             method: "DELETE",
