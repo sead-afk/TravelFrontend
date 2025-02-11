@@ -158,8 +158,8 @@ function showDeleteModal(bookingId, row) {
 
     // Handle Confirm Delete
     document.getElementById("confirmDelete").onclick = async function () {
+        modal.style.display = "none";
         await deleteBooking(bookingId, row);
-        modal.style.display = "none"; // Close modal after deleting
     };
 
     // Handle Cancel Delete
