@@ -207,9 +207,7 @@ export async function openEditBookingModal(bookingId, type) {
         }
         const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
             method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) {
             throw new Error(`Failed to fetch booking details: ${response.status}`);
@@ -217,42 +215,67 @@ export async function openEditBookingModal(bookingId, type) {
         const booking = await response.json();
 
         if (type === "HOTEL") {
-            // Get hotel modal elements using correct IDs
+            // Get hotel modal elements (for HOTEL bookings)
             const bookingIdElem = document.getElementById("edit-hotel-booking-id");
             const startDateElem = document.getElementById("edit-hotel-start-date");
             const endDateElem = document.getElementById("edit-hotel-end-date");
             const amountElem = document.getElementById("edit-hotel-amount");
+            const hotelDropdown = document.getElementById("edit-hotel-dropdown");
             const roomDropdown = document.getElementById("edit-room-dropdown");
 
-            if (!bookingIdElem || !startDateElem || !endDateElem || !amountElem || !roomDropdown) {
+            if (!bookingIdElem || !startDateElem || !endDateElem || !amountElem || !hotelDropdown || !roomDropdown) {
                 throw new Error("One or more hotel modal elements not found. Please check your modal HTML.");
             }
+
+            // Populate editable fields
             bookingIdElem.value = booking.id || booking._id;
             startDateElem.value = booking.startDate;
             endDateElem.value = booking.endDate;
             amountElem.value = booking.amount;
-            // Load dropdown options for hotels and rooms
-            await loadAvailableHotelsForEdit(booking.resourceid, booking.details);
-            // Attach save handler for hotel modal save button
+
+            // Set hotel dropdown to only display the current hotel (read-only)
+            hotelDropdown.innerHTML = `<option value="${booking.resourceid}" selected>${booking.hotelName || "Current Hotel"}</option>`;
+            hotelDropdown.disabled = true;
+
+            // Load available rooms for the current hotel.
+            // This function should populate roomDropdown with available rooms (plus include the current room even if unavailable)
+            await loadAvailableRoomsForEdit(booking.resourceid, booking.details);
+            // The room dropdown remains enabled so the user can choose a different room.
+
+            // Attach save handler for hotel modal
             document.getElementById("save-hotel-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "HOTEL");
             };
+
             $("#editHotelBookingModal").modal("show");
         } else if (type === "FLIGHT") {
-            // Get flight modal elements using correct IDs
+            // Get flight modal elements (for FLIGHT bookings)
             const bookingIdElem = document.getElementById("edit-flight-booking-id");
             const amountElem = document.getElementById("edit-flight-amount");
+            const flightDropdown = document.getElementById("edit-flight-dropdown");
             const seatDropdown = document.getElementById("edit-seat-dropdown");
 
-            if (!bookingIdElem || !amountElem || !seatDropdown) {
+            if (!bookingIdElem || !amountElem || !flightDropdown || !seatDropdown) {
                 throw new Error("One or more flight modal elements not found. Please check your modal HTML.");
             }
+
             bookingIdElem.value = booking.id || booking._id;
             amountElem.value = booking.amount;
-            loadAvailableFlightsForEdit(booking.resourceid, booking.details);
+
+            // Set flight dropdown to only display the current flight (read-only)
+            flightDropdown.innerHTML = `<option value="${booking.resourceid}" selected>${booking.flightNumber || "Current Flight"}</option>`;
+            flightDropdown.disabled = true;
+
+            // Load available seats for the current flight.
+            // This function should populate seatDropdown with available seats (plus include the current seat)
+            await loadAvailableSeatsForEdit(booking.resourceid, booking.details);
+            // The seat dropdown remains enabled.
+
+            // Attach save handler for flight modal
             document.getElementById("save-flight-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "FLIGHT");
             };
+
             $("#editFlightBookingModal").modal("show");
         }
     } catch (error) {
@@ -278,8 +301,11 @@ function recalcHotelAmount() {
 }
 
 /**
- * Submits the edited booking details to update the booking.
+ * Submits the edited booking data.
+ * For HOTEL, allows editing start/end dates and room (and recalculates amount).
+ * For FLIGHT, allows editing seat selection.
  * @param {string} bookingId - The booking ID.
+ * @param {string} type - "HOTEL" or "FLIGHT".
  */
 async function submitEditBooking(bookingId, type) {
     try {
@@ -294,11 +320,12 @@ async function submitEditBooking(bookingId, type) {
                 startDate: document.getElementById("edit-hotel-start-date").value,
                 endDate: document.getElementById("edit-hotel-end-date").value,
                 amount: parseFloat(document.getElementById("edit-hotel-amount").value),
+                // Only room can change, not the hotel itself.
                 details: document.getElementById("edit-room-dropdown").value
             };
-            console.log("updated booking_ ",updatedBooking);
         } else if (type === "FLIGHT") {
             updatedBooking = {
+                // For flights, only seat can change.
                 amount: parseFloat(document.getElementById("edit-flight-amount").value),
                 details: document.getElementById("edit-seat-dropdown").value
             };
