@@ -188,6 +188,7 @@ async function deleteBooking(bookingId, row) {
         }
         alert("Booking deleted successfully");
         row.remove();
+        await loadUserProfile();
     } catch (error) {
         console.error("Error deleting booking:", error);
         alert("Error deleting booking. Please try again.");
