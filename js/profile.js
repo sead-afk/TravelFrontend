@@ -141,7 +141,9 @@ async function attachBookingActions() {
             if (target.closest('.delete-booking')) {
                 const row = target.closest('tr');
                 const bookingId = row.getAttribute('data-booking-id');
-                if (confirm("Are you sure you want to delete this booking?")) {
+
+                if (window.confirm("Are you sure you want to delete this booking?")) {
+                    window.close();
                     await deleteBooking(bookingId, row);
                 }
             }
