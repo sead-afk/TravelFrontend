@@ -143,7 +143,6 @@ async function attachBookingActions() {
                 const bookingId = row.getAttribute('data-booking-id');
                 if (confirm("Are you sure you want to delete this booking?")) {
                     await deleteBooking(bookingId, row);
-                    refreshUserProfile();
                 }
             }
         });
@@ -163,7 +162,6 @@ async function attachBookingActions() {
                 const bookingId = row.getAttribute('data-booking-id');
                 if (confirm("Are you sure you want to delete this booking?")) {
                     await deleteBooking(bookingId, row);
-                    refreshUserProfile();
                 }
             }
         });
@@ -175,26 +173,25 @@ async function attachBookingActions() {
  * @param {string} bookingId - The ID of the booking to delete.
  * @param {HTMLElement} row - The table row element corresponding to the booking.
  */
-async function deleteBooking(bookingId, row) {
+async function deleteBooking(bookingId) {
     try {
-        console.log("Attempting to delete booking:", bookingId);
-        const token = localStorage.getItem("jwt");
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
-            method: "DELETE",
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+            method: 'DELETE',
             headers: {
-                "Authorization": `Bearer ${token}`
-            }
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+            },
         });
+
         if (!response.ok) {
             throw new Error(`Delete failed: ${response.status}`);
         }
-        alert("Booking deleted successfully");
-        row.remove();
+        console.log('Booking deleted successfully');
+        await refreshUserProfile(); // Update balance after deletion
     } catch (error) {
-        console.error("Error deleting booking:", error);
-        alert("Error deleting booking. Please try again.");
+        console.error('Error deleting booking:', error);
     }
 }
+
 
 /**
  * Opens an edit modal for a booking.
