@@ -146,8 +146,10 @@ async function attachBookingActions() {
 
         if (target.closest('.delete-booking')) {
 
-            if (confirm("Are you sure you want to delete this booking?")) {
-                 deleteBooking(bookingId, row);
+            event.stopPropagation(); // Prevent duplicate handlers firing
+            const isConfirmed = confirm("Are you sure you want to delete this booking?");
+            if (isConfirmed) {
+                deleteBooking(bookingId, row);
             }
         }
     });
