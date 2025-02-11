@@ -250,7 +250,7 @@ export async function openEditBookingModal(bookingId, type) {
             // Attach save handler for hotel modal
             document.getElementById("save-hotel-edit").onclick = async function () {
                 await submitEditBooking(booking, "HOTEL");
-                loadUserProfile();
+                await loadUserProfile();
             };
 
             $("#editHotelBookingModal").modal("show");
@@ -280,7 +280,7 @@ export async function openEditBookingModal(bookingId, type) {
             // Attach save handler for flight modal
             document.getElementById("save-flight-edit").onclick = async function () {
                 await submitEditBooking(booking, "FLIGHT");
-                loadUserProfile();
+                await loadUserProfile();
             };
 
             $("#editFlightBookingModal").modal("show");
