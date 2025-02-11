@@ -246,6 +246,7 @@ export async function openEditBookingModal(bookingId, type) {
             // Attach save handler for hotel modal
             document.getElementById("save-hotel-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "HOTEL");
+                refreshUserProfile();
             };
 
             $("#editHotelBookingModal").modal("show");
@@ -275,6 +276,7 @@ export async function openEditBookingModal(bookingId, type) {
             // Attach save handler for flight modal
             document.getElementById("save-flight-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "FLIGHT");
+                refreshUserProfile();
             };
 
             $("#editFlightBookingModal").modal("show");
@@ -556,6 +558,23 @@ async function loadAvailableSeatsForEdit(flightId, currentTicketId) {
         console.error("Error loading available seats:", error);
     }
 }
+
+async function refreshUserProfile() {
+    try {
+        const response = await fetch(`/api/users/profile`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            },
+        });
+        if (response.ok) {
+            const userData = await response.json();
+            document.getElementById("balance").textContent = userData.balance.toFixed(2);
+        }
+    } catch (error) {
+        console.error("Error refreshing user profile:", error);
+    }
+}
+
 
 
 
