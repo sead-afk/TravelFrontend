@@ -130,31 +130,45 @@ export async function loadUserProfile() {
 async function attachBookingActions() {
     // Delegated event listener for flight bookings
 
-    document.getElementById('bookings-container').addEventListener('click',  function (event) {
+    document.getElementById('bookings-container').addEventListener('click', function (event) {
         const target = event.target;
-        let row = target.closest('tr');
+        const row = target.closest('tr');
         if (!row) return;
 
-        let bookingId = row.getAttribute('data-booking-id');
-        let container = row.closest('#flight-bookings') ? "FLIGHT" : row.closest('#hotel-bookings') ? "HOTEL" : null;
+        const bookingId = row.getAttribute('data-booking-id');
+        const container = row.closest('#flight-bookings') ? "FLIGHT" :
+            row.closest('#hotel-bookings') ? "HOTEL" : null;
 
         if (!container) return;
 
         if (target.closest('.edit-booking')) {
-             openEditBookingModal(bookingId, container);
+            openEditBookingModal(bookingId, container);
         }
 
         if (target.closest('.delete-booking')) {
-
-            event.stopPropagation(); // Prevent duplicate handlers firing
-            const isConfirmed = confirm("Are you sure you want to delete this booking?");
-            if (isConfirmed) {
-                deleteBooking(bookingId, row);
-            }
+            event.stopPropagation();
+            showDeleteModal(bookingId, row);
         }
     });
-
 }
+
+function showDeleteModal(bookingId, row) {
+    const modal = document.getElementById("deleteModal");
+    modal.style.display = "flex";
+
+    // Handle Confirm Delete
+    document.getElementById("confirmDelete").onclick = async function () {
+        await deleteBooking(bookingId, row);
+        modal.style.display = "none"; // Close modal after deleting
+    };
+
+    // Handle Cancel Delete
+    document.getElementById("cancelDelete").onclick = function () {
+        modal.style.display = "none"; // Just close the modal
+    };
+}
+
+
 
 /**
  * Sends a DELETE request to delete a booking and removes the row from the table on success.
