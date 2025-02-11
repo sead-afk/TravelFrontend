@@ -431,15 +431,13 @@ async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
         const roomDropdown = document.getElementById("edit-room-dropdown");
         roomDropdown.innerHTML = "";
         rooms.forEach(room => {
-            if (room.id !== currentRoomId) {
-                return; // Only show available rooms unless it's the currently booked one.
-            }
+            const roomId = room.id || room._id; // Use _id if id isn't defined
             const option = document.createElement("option");
-            option.value = room.id;
+            option.value = roomId;
             option.textContent = `Room ${room.roomNumber} - $${room.pricePerNight}`;
-            if (room.id === currentRoomId) {
+            if (roomId === currentRoomId) {
                 option.selected = true;
-                recalcHotelAmount(); // Optionally recalc amount based on this room
+                recalcHotelAmount(); // Recalculate amount if needed.
             }
             option.setAttribute("data-price", room.pricePerNight);
             roomDropdown.appendChild(option);
