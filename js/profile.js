@@ -315,22 +315,58 @@ async function submitEditBooking(bookingId, type) {
             alert("You must be logged in to edit a booking.");
             return;
         }
+
         let updatedBooking = {};
         if (type === "HOTEL") {
+            const startDate = document.getElementById("edit-hotel-start-date").value;
+            const endDate = document.getElementById("edit-hotel-end-date").value;
+            const amountStr = document.getElementById("edit-hotel-amount").value;
+            const roomId = document.getElementById("edit-room-dropdown").value;
+
+            // Basic validation
+            if (!startDate || !endDate) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert("Start date must be before the end date.");
+                return;
+            }
+            if (isNaN(parseFloat(amountStr))) {
+                alert("Invalid amount.");
+                return;
+            }
+            if (!roomId) {
+                alert("Please select a room.");
+                return;
+            }
+
             updatedBooking = {
-                startDate: document.getElementById("edit-hotel-start-date").value,
-                endDate: document.getElementById("edit-hotel-end-date").value,
-                amount: parseFloat(document.getElementById("edit-hotel-amount").value),
-                // Only room can change, not the hotel itself.
-                details: document.getElementById("edit-room-dropdown").value
+                startDate: startDate,
+                endDate: endDate,
+                amount: parseFloat(amountStr),
+                details: roomId
             };
         } else if (type === "FLIGHT") {
+            const amountStr = document.getElementById("edit-flight-amount").value;
+            const seatId = document.getElementById("edit-seat-dropdown").value;
+            if (isNaN(parseFloat(amountStr))) {
+                alert("Invalid amount.");
+                return;
+            }
+            if (!seatId) {
+                alert("Please select a seat.");
+                return;
+            }
+
             updatedBooking = {
-                // For flights, only seat can change.
-                amount: parseFloat(document.getElementById("edit-flight-amount").value),
-                details: document.getElementById("edit-seat-dropdown").value
+                amount: parseFloat(amountStr),
+                details: seatId
             };
         }
+
+        console.log("Submitting updated booking payload:", updatedBooking);
+
         const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
             method: "PUT",
             headers: {
@@ -354,6 +390,7 @@ async function submitEditBooking(bookingId, type) {
         alert("Error updating booking. Please try again.");
     }
 }
+
 
 
 /**
