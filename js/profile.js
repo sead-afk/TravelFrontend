@@ -537,26 +537,37 @@ async function loadAvailableFlightsForEdit(currentFlightId, currentTicketId) {
 async function loadAvailableSeatsForEdit(flightId, currentTicketId) {
     try {
         const token = localStorage.getItem("jwt");
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightId}`, {
+        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightId}/tickets`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) {
             throw new Error("Failed to fetch flight details.");
         }
-        const flight = await response.json();
+        const tickets = await response.json();
         const seatDropdown = document.getElementById("edit-seat-dropdown");
         seatDropdown.innerHTML = "";
-        flight.tickets.forEach(ticket => {
-            // Only show available seats unless it is the currently booked ticket.
-            if (ticket.id !== currentTicketId) return;
+        tickets.forEach(ticket => {
+            const ticketId = ticket.id || ticket._id; // Use _id if id isn't defined
             const option = document.createElement("option");
-            option.value = ticket.id;
-            option.textContent = `Seat ${ticket.seatNumber}`;
-            if (ticket.id === currentTicketId) {
+            option.value = ticketId;
+            option.textContent = `Seat ${ticket.seatNumber} - $${ticket.price}`;
+            if ((ticket.id || ticket._id) === currentTicketId) {
                 option.selected = true;
             }
+            option.setAttribute("data-price", ticket.price);
             seatDropdown.appendChild(option);
         });
+        seatDropdown.onchange = function() {
+            const selectedOption = seatDropdown.options[seatDropdown.selectedIndex];
+            const price = selectedOption ? parseFloat(selectedOption.getAttribute("data-price")) : 0;
+            document.getElementById("edit-flight-amount").value = price;
+        };
+
+        // Optionally, trigger the onchange immediately to set the amount for the initially selected option
+        if (seatDropdown.selectedIndex !== -1) {
+            const initialOption = seatDropdown.options[seatDropdown.selectedIndex];
+            document.getElementById("edit-flight-amount").value = parseFloat(initialOption.getAttribute("data-price"));
+        }
     } catch (error) {
         console.error("Error loading available seats:", error);
     }
