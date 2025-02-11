@@ -173,24 +173,27 @@ async function attachBookingActions() {
  * @param {string} bookingId - The ID of the booking to delete.
  * @param {HTMLElement} row - The table row element corresponding to the booking.
  */
-async function deleteBooking(bookingId) {
+async function deleteBooking(bookingId, row) {
     try {
-        const response = await fetch(`/api/bookings/${bookingId}`, {
-            method: 'DELETE',
+        console.log("Attempting to delete booking:", bookingId);
+        const token = localStorage.getItem("jwt");
+        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
+            method: "DELETE",
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-            },
+                "Authorization": `Bearer ${token}`
+            }
         });
-
         if (!response.ok) {
             throw new Error(`Delete failed: ${response.status}`);
         }
-        console.log('Booking deleted successfully');
-        await loadUserProfile(); // Update balance after deletion
+        alert("Booking deleted successfully");
+        row.remove();
     } catch (error) {
-        console.error('Error deleting booking:', error);
+        console.error("Error deleting booking:", error);
+        alert("Error deleting booking. Please try again.");
     }
 }
+
 
 
 /**
