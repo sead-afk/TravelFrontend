@@ -151,21 +151,21 @@ async function attachBookingActions() {
     // Delegated event listener for hotel bookings
     const hotelBookingsContainer = document.getElementById('hotel-bookings');
     if (hotelBookingsContainer) {
-        hotelBookingsContainer.addEventListener('click', async function (event) {
-            const target = event.target;
-            if (target.closest('.edit-booking')) {
-                const row = target.closest('tr');
-                const bookingId = row.getAttribute('data-booking-id');
-                await openEditBookingModal(bookingId, "HOTEL");
-            }
-            if (target.closest('.delete-booking')) {
-                const row = target.closest('tr');
-                const bookingId = row.getAttribute('data-booking-id');
-                if (confirm("Are you sure you want to delete this booking?")) {
-                    await deleteBooking(bookingId, row);
-                }
-            }
-        });
+        // hotelBookingsContainer.addEventListener('click', async function (event) {
+        //     const target = event.target;
+        //     if (target.closest('.edit-booking')) {
+        //         const row = target.closest('tr');
+        //         const bookingId = row.getAttribute('data-booking-id');
+        //         await openEditBookingModal(bookingId, "HOTEL");
+        //     }
+        //     if (target.closest('.delete-booking')) {
+        //         const row = target.closest('tr');
+        //         const bookingId = row.getAttribute('data-booking-id');
+        //         if (confirm("Are you sure you want to delete this booking?")) {
+        //             await deleteBooking(bookingId, row);
+        //         }
+        //     }
+        // });
     }
 }
 
