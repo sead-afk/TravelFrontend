@@ -143,6 +143,7 @@ async function attachBookingActions() {
                 const bookingId = row.getAttribute('data-booking-id');
                 if (confirm("Are you sure you want to delete this booking?")) {
                     await deleteBooking(bookingId, row);
+                    refreshUserProfile();
                 }
             }
         });
@@ -162,6 +163,7 @@ async function attachBookingActions() {
                 const bookingId = row.getAttribute('data-booking-id');
                 if (confirm("Are you sure you want to delete this booking?")) {
                     await deleteBooking(bookingId, row);
+                    refreshUserProfile();
                 }
             }
         });
