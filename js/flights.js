@@ -151,6 +151,7 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
 
     // Create booking details object
     const bookingDetails = {
+
         username: username,
         resourceid: flightId,
         details: ticketId,

@@ -130,7 +130,7 @@ export async function loadUserProfile() {
 async function attachBookingActions() {
     // Delegated event listener for flight bookings
 
-    document.getElementById('bookings-container').addEventListener('click', async function (event) {
+    document.getElementById('bookings-container').addEventListener('click',  function (event) {
         const target = event.target;
         let row = target.closest('tr');
         if (!row) return;
@@ -141,12 +141,13 @@ async function attachBookingActions() {
         if (!container) return;
 
         if (target.closest('.edit-booking')) {
-            await openEditBookingModal(bookingId, container);
+             openEditBookingModal(bookingId, container);
         }
 
         if (target.closest('.delete-booking')) {
+
             if (confirm("Are you sure you want to delete this booking?")) {
-                await deleteBooking(bookingId, row);
+                 deleteBooking(bookingId, row);
             }
         }
     });
