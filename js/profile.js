@@ -186,7 +186,7 @@ async function deleteBooking(bookingId) {
             throw new Error(`Delete failed: ${response.status}`);
         }
         console.log('Booking deleted successfully');
-        await refreshUserProfile(); // Update balance after deletion
+        await loadUserProfile(); // Update balance after deletion
     } catch (error) {
         console.error('Error deleting booking:', error);
     }
@@ -245,7 +245,7 @@ export async function openEditBookingModal(bookingId, type) {
             // Attach save handler for hotel modal
             document.getElementById("save-hotel-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "HOTEL");
-                refreshUserProfile();
+                loadUserProfile();
             };
 
             $("#editHotelBookingModal").modal("show");
@@ -275,7 +275,7 @@ export async function openEditBookingModal(bookingId, type) {
             // Attach save handler for flight modal
             document.getElementById("save-flight-edit").onclick = async function () {
                 await submitEditBooking(booking.id || booking._id, "FLIGHT");
-                refreshUserProfile();
+                loadUserProfile();
             };
 
             $("#editFlightBookingModal").modal("show");
