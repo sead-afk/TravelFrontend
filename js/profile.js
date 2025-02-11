@@ -248,7 +248,7 @@ export async function openEditBookingModal(bookingId, type) {
 
             // Attach save handler for hotel modal
             document.getElementById("save-hotel-edit").onclick = async function () {
-                await submitEditBooking(booking.id || booking._id, "HOTEL");
+                await submitEditBooking(booking, "HOTEL");
                 loadUserProfile();
             };
 
@@ -278,7 +278,7 @@ export async function openEditBookingModal(bookingId, type) {
 
             // Attach save handler for flight modal
             document.getElementById("save-flight-edit").onclick = async function () {
-                await submitEditBooking(booking.id || booking._id, "FLIGHT");
+                await submitEditBooking(booking, "FLIGHT");
                 loadUserProfile();
             };
 
@@ -310,69 +310,48 @@ function recalcHotelAmount() {
  * Submits the edited booking data.
  * For HOTEL, allows editing start/end dates and room (and recalculates amount).
  * For FLIGHT, allows editing seat selection.
- * @param {string} bookingId - The booking ID.
+ * @param {string} booking - The booking.
  * @param {string} type - "HOTEL" or "FLIGHT".
  */
-async function submitEditBooking(bookingId, type) {
+async function submitEditBooking(booking, type) {
     try {
         const token = localStorage.getItem("jwt");
         if (!token) {
             alert("You must be logged in to edit a booking.");
             return;
         }
-
         let updatedBooking = {};
         if (type === "HOTEL") {
             const startDate = document.getElementById("edit-hotel-start-date").value;
             const endDate = document.getElementById("edit-hotel-end-date").value;
             const amountStr = document.getElementById("edit-hotel-amount").value;
             const roomId = document.getElementById("edit-room-dropdown").value;
-
-            // Basic validation
-            if (!startDate || !endDate) {
-                alert("Please select both start and end dates.");
-                return;
-            }
-            if (new Date(startDate) >= new Date(endDate)) {
-                alert("Start date must be before the end date.");
-                return;
-            }
-            if (isNaN(parseFloat(amountStr))) {
-                alert("Invalid amount.");
-                return;
-            }
-            if (!roomId) {
-                alert("Please select a room.");
-                return;
-            }
-
             updatedBooking = {
+                id: booking.id || booking._id,
+                username: booking.username,       // use original data
+                resourceid: booking.resourceid,     // use original data
+                details: roomId,
+                type: booking.type,
+                bookingDate: booking.bookingDate,   // use original data
                 startDate: startDate,
                 endDate: endDate,
-                amount: parseFloat(amountStr),
-                details: roomId
+                amount: parseFloat(amountStr)
             };
         } else if (type === "FLIGHT") {
             const amountStr = document.getElementById("edit-flight-amount").value;
             const seatId = document.getElementById("edit-seat-dropdown").value;
-            if (isNaN(parseFloat(amountStr))) {
-                alert("Invalid amount.");
-                return;
-            }
-            if (!seatId) {
-                alert("Please select a seat.");
-                return;
-            }
-
             updatedBooking = {
-                amount: parseFloat(amountStr),
-                details: seatId
+                id: booking.id || booking._id,
+                username: booking.username,
+                resourceid: booking.resourceid,
+                details: seatId,
+                type: booking.type,
+                bookingDate: booking.bookingDate,
+                amount: parseFloat(amountStr)
             };
         }
-
         console.log("Submitting updated booking payload:", updatedBooking);
-
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
+        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${booking.id || booking._id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -395,7 +374,6 @@ async function submitEditBooking(bookingId, type) {
         alert("Error updating booking. Please try again.");
     }
 }
-
 
 
 /**
