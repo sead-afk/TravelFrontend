@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config.js";
+
 function loadHotelRooms(hotelId) {
     const roomSelect = document.getElementById("room-select");
     roomSelect.innerHTML = "<option>Loading rooms...</option>";

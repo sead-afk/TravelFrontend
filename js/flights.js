@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config.js";
+
 //document.addEventListener("DOMContentLoaded", () => {
 const flightList = document.getElementById("flight-list");
 const flightSearchInput = document.getElementById("flight-search-input");

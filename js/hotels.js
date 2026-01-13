@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config.js";
+
 const hotelList = document.getElementById("hotel-list");
 const hotelSearchInput = document.getElementById("hotel-search-input"); // Search bar element
 

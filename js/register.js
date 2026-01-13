@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config.js";
+
 //document.addEventListener("DOMContentLoaded", () => {
     const registerForm = document.getElementById("registerForm");
     const registerError = document.getElementById("registerError");
@@ -18,7 +20,9 @@
         console.log("Confirm Password:", confirmPassword);
 
         // Strong password regex
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        //const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d^#@$!%*?&]{8,}$/;
+        //new reg
+        const passwordRegex = ^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$;
 
         // Validate password strength
         if (!passwordRegex.test(password)) {

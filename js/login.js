@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config.js";
+
 /*function sejo(event) {
     event.preventDefault();
     console.log(event);
