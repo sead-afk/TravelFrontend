@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./config.js";
+const API_BASE_URL = window.API_BASE_URL;
 
 //document.addEventListener("DOMContentLoaded", () => {
     const registerForm = document.getElementById("registerForm");
@@ -36,7 +36,7 @@ import { API_BASE_URL } from "./config.js";
             return;
         }
 
-        const registerUrl = "https://spring-boot-travel-production.up.railway.app/api/auth/register";
+        const registerUrl = "${API_BASE_URL}/api/auth/register";
         const bodyJson= JSON.stringify(
             { userType:userType,
                 firstName:firstName,

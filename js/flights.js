@@ -1,11 +1,11 @@
-import { API_BASE_URL } from "./config.js";
-
+const API_BASE_URL = window.API_BASE_URL;
+const API_BASE_URL = window.API_BASE_URL;
 //document.addEventListener("DOMContentLoaded", () => {
 const flightList = document.getElementById("flight-list");
 const flightSearchInput = document.getElementById("flight-search-input");
 
 // Replace this URL with your backend API endpoint
-const flightApiUrl = "https://spring-boot-travel-production.up.railway.app/api/flights/";
+const flightApiUrl = "${API_BASE_URL}/api/flights/";
 
 // Fetch the flight data
 fetch(flightApiUrl)
@@ -166,7 +166,7 @@ document.getElementById("confirm-flight-booking").addEventListener("click", asyn
     let responseStatusText="";
     // Make the booking request
     try {
-        const response = await fetch("https://spring-boot-travel-production.up.railway.app/api/flights/bookTicket", {
+        const response = await fetch("${API_BASE_URL}/api/flights/bookTicket", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

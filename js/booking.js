@@ -1,10 +1,10 @@
-import { API_BASE_URL } from "./config.js";
+const API_BASE_URL = window.API_BASE_URL;
 
 function loadHotelRooms(hotelId) {
     const roomSelect = document.getElementById("room-select");
     roomSelect.innerHTML = "<option>Loading rooms...</option>";
 
-    fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelId}/rooms`)
+    fetch(`${API_BASE_URL}/api/hotels/${hotelId}/rooms`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Failed to fetch rooms");
@@ -30,7 +30,7 @@ function submitBookingForm(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
-    const apiUrl = "https://spring-boot-travel-production.up.railway.app//api/bookings/hotel";
+    const apiUrl = "${API_BASE_URL}//api/bookings/hotel";
 
     fetch(apiUrl, {
         method: "POST",

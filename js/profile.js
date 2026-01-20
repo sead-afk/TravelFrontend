@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./config.js";
+const API_BASE_URL = window.API_BASE_URL;
 
 // profile.js
 
@@ -13,7 +13,7 @@ export async function loadUserProfile() {
         }
 
         // Fetch user profile from the backend
-        const userResponse = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/profile', {
+        const userResponse = await fetch(`${API_BASE_URL}/api/users/profile`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -38,7 +38,7 @@ export async function loadUserProfile() {
         }
 
         // Fetch the user's bookings
-        const bookingResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/user/${user.username}`, {
+        const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings/user/${user.username}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -63,7 +63,7 @@ export async function loadUserProfile() {
             const flightResource = booking.resourceid;
 
             // Fetch flight details for this booking
-            fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightResource}`)
+            fetch(`${API_BASE_URL}/api/flights/${flightResource}`)
                 .then(response => response.json())
                 .then(flight => {
                     // Find the ticket that matches the booking details (seat info)
@@ -96,7 +96,7 @@ export async function loadUserProfile() {
 
             // Fetch hotel details for this booking
 
-            const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelResource}`);
+            const hotelResponse = await fetch(`${API_BASE_URL}/api/hotels/${hotelResource}`);
             const hotel = await hotelResponse.json();
             //const hotel=JSON.stringify(jsonHotel);
             // Find the room in the hotel's room list using booking.details
@@ -181,7 +181,7 @@ async function deleteBooking(bookingId, row) {
     try {
         console.log("Attempting to delete booking:", bookingId);
         const token = localStorage.getItem("jwt");
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -213,7 +213,7 @@ export async function openEditBookingModal(bookingId, type) {
             alert("You must be logged in to edit a booking.");
             return;
         }
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${bookingId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -355,7 +355,7 @@ async function submitEditBooking(booking, type) {
             };
         }
         console.log("Submitting updated booking payload:", updatedBooking);
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/bookings/${booking.id || booking._id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/bookings/${booking.id || booking._id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -394,7 +394,7 @@ async function updateUserBalance() {
             alert("Please enter a valid amount.");
             return;
         }
-        const response = await fetch('https://spring-boot-travel-production.up.railway.app/api/users/add-funds', {
+        const response = await fetch(`${API_BASE_URL}/api/users/add-funds`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -415,7 +415,7 @@ async function updateUserBalance() {
 async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
     try {
         const token = localStorage.getItem("jwt");
-        const hotelResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/`, {
+        const hotelResponse = await fetch(`${API_BASE_URL}/api/hotels/`, {
             headers: {"Authorization": `Bearer ${token}`}
         });
         if (!hotelResponse.ok) {
@@ -446,7 +446,7 @@ async function loadAvailableHotelsForEdit(currentHotelId, currentRoomId) {
 async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
     try {
         const token = localStorage.getItem("jwt");
-        const roomResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/hotels/${hotelId}/rooms`, {
+        const roomResponse = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}/rooms`, {
             headers: {"Authorization": `Bearer ${token}`}
         });
         if (!roomResponse.ok) {
@@ -481,7 +481,7 @@ async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
 async function loadAvailableFlightsForEdit(currentFlightId, currentTicketId) {
     try {
         const token = localStorage.getItem("jwt");
-        const flightResponse = await fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/`, {
+        const flightResponse = await fetch(`${API_BASE_URL}/api/flights/`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!flightResponse.ok) {
@@ -519,7 +519,7 @@ async function loadAvailableFlightsForEdit(currentFlightId, currentTicketId) {
 async function loadAvailableSeatsForEdit(flightId, currentTicketId) {
     try {
         const token = localStorage.getItem("jwt");
-        const response = await fetch(`https://spring-boot-travel-production.up.railway.app/api/flights/${flightId}/tickets`, {
+        const response = await fetch(`${API_BASE_URL}/api/flights/${flightId}/tickets`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) {
