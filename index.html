@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Travel App SPA</title>
+
+    <!-- FontAwesome Icons -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <!-- SB Admin 2 CSS -->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom SPA CSS -->
+    <link href="css/spapp.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-icon">
+                <i class="fas fa-plane"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">TravelApp</div>
+        </a>
+
+        <!-- Nav Items -->
+        <li class="nav-item">
+            <a class="nav-link" href="#hotels">
+                <i class="fas fa-hotel"></i>
+                <span>Hotels</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#flights">
+                <i class="fas fa-plane-departure"></i>
+                <span>Flights</span>
+            </a>
+        </li>
+        <!-- Profile link -->
+        <li class="nav-item" id="profileNavItem" style="display: none;">
+            <a class="nav-link" href="#profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </li>
+        <!-- Authentication Links -->
+        <div id="authLinks"></div>
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <ul class="navbar-nav ml-auto"></ul>
+            </nav>
+            <div class="container-fluid">
+                <main id="spapp" role="main">
+                    <section id="hotels" data-load="hotels.html"></section>
+                    <section id="flights" data-load="flights.html"></section>
+                    <section id="profile" data-load="profile.html"></section>
+                    <section id="login" data-load="login.html"></section>
+                    <section id="register" data-load="register.html"></section>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End of Page Wrapper -->
+
+<!-- Modal (index.html or relevant main HTML file) -->
+<div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingModalLabel">Book Your Stay</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <p id="modal-hotel-name">Hotel Name: </p>
+                    <label for="room-select">Select a Room:</label>
+                    <select id="room-select" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="confirm-booking" class="btn btn-primary">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="flightBookingModal" tabindex="-1" role="dialog" aria-labelledby="flightBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="flightBookingModalLabel">Book Your Flight</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <p id="modal-airline">Flight: <span id="airline"></span></p>
+                    <label for="seat-select">Select a seat:</label>
+                    <select id="seat-select" class="form-control">
+                        <!-- Options will be populated here -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="confirm-flight-booking" class="btn btn-primary">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and Dependencies -->
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.bundle.js"></script>
+<script src="js/sb-admin-2.js"></script>
+
+<!-- SPA Script -->
+<script src="js/jquery.spapp.min.js"></script>
+<script>
+    let app = $.spapp({
+        templateDir: 'pages/' // Directory containing your SPA pages
+    });
+    app.route("", function () {
+        console.log("Default route loaded (redirect to #hotels)");
+        window.location.hash = "#hotels"; // Redirect to the default route
+    });
+
+    app.route("#", function () {
+        console.log("Empty hash detected (redirect to #hotels)");
+        window.location.hash = "#hotels"; // Redirect to the default route
+    });
+
+    app.route("#profile", function() {
+        // This callback is called after profile.html is loaded.
+        loadUserProfile();
+    });
+
+    // app.route('#booking', function () {
+    //     console.log("Route detected: booking");
+    //     const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+    //     const type = hashParams.get('type');
+    //     const hotelId = hashParams.get('hotelId');
+    //     const hotelName = decodeURIComponent(hashParams.get('hotelName'));
+    //
+    //     console.log("Type:", type, "Hotel ID:", hotelId, "Hotel Name:", hotelName);
+    //
+    //     // Call initializeBookingForm or other functions
+    //     initializeBookingForm(type, hotelId, hotelName);
+    // });
+    app.run();
+    //console.log("Router initialized. Current hash:", window.location.hash);
+</script>
+<script src="/config.js"></script>
+<script type="module" src="js/index.js"></script>
+<!--<script src="js/login.js"></script>-->
+</body>
+
+</html>
+
