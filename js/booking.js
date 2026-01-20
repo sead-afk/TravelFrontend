@@ -30,7 +30,7 @@ function submitBookingForm(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
-    const apiUrl = "${API_BASE_URL}//api/bookings/hotel";
+    const apiUrl = `${API_BASE_URL}//api/bookings/hotel`;
 
     fetch(apiUrl, {
         method: "POST",

@@ -4,7 +4,7 @@ const hotelList = document.getElementById("hotel-list");
 const hotelSearchInput = document.getElementById("hotel-search-input"); // Search bar element
 
 // Replace this URL with your backend API endpoint
-const hotelApiUrl = "${API_BASE_URL}/api/hotels/";
+const hotelApiUrl = `${API_BASE_URL}/api/hotels/`;
 
 // Fetch the hotel data
 fetch(hotelApiUrl)
@@ -187,7 +187,7 @@ document.getElementById("confirm-booking").addEventListener("click", async () =>
     console.log("Booking payload:", bookingDetails);
 
     try {
-        const response = await fetch("${API_BASE_URL}/api/hotels/bookRoom", {
+        const response = await fetch(`${API_BASE_URL}/api/hotels/bookRoom`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

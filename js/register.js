@@ -36,7 +36,7 @@ const API_BASE_URL = window.API_BASE_URL;
             return;
         }
 
-        const registerUrl = "${API_BASE_URL}/api/auth/register";
+        const registerUrl = `${API_BASE_URL}/api/auth/register`;
         const bodyJson= JSON.stringify(
             { userType:userType,
                 firstName:firstName,
