@@ -1,4 +1,4 @@
-const API_BASE_URL = window.API_BASE_URL;
+
 
 /*function sejo(event) {
     event.preventDefault();
@@ -23,7 +23,7 @@ loginForm.addEventListener("submit", async (event) => {
     console.log(`Email: ${email}, Password: ${password}`); // Debugging
     console.log("Payload sent to backend:", JSON.stringify({ email, password }));
 
-    const loginUrl = `${API_BASE_URL}/api/auth/login`;
+    const loginUrl = `${window.API_BASE_URL}/api/auth/login`;
 
     try {
         const response = await fetch(loginUrl, {
