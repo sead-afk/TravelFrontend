@@ -1,33 +1,20 @@
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flights - Travel App</title>
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
 
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Available Flights</h1>
 
-<div id="wrapper">
-    <div id="content-wrapper" class="d-flex flex-column">
-        <div id="content">
-            <div class="container-fluid">
-                <h1 class="h3 mb-4 text-gray-800">Available Flights</h1>
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input
+                type="text"
+                id="flight-search-input"
+                class="form-control"
+                placeholder="Search flights by airline, departure, or arrival"
+        />
+    </div>
 
-                <!-- Search Bar for Flights -->
-                <div class="mb-4">
-                    <input type="text" id="flight-search-input" class="form-control" placeholder="Search flights by airline, departure, or arrival">
-                </div>
-
-                <div class="row" id="flight-list">
-                    <!-- Dynamic flight cards will be inserted here -->
-                </div>
-            </div>
-        </div>
+    <div class="row" id="flight-list">
+        <!-- Flight cards injected here -->
     </div>
 </div>
-
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
-<script src="js/flights.js"></script>
-<script src="js/sb-admin-2.js"></script>
-
