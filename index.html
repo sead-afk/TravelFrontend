@@ -158,16 +158,16 @@ app.route("#", function () {
 });
 
 app.route("#hotels", function () {
-    console.log("Route: hotels");
-    if (typeof initHotels === "function") {
-        initHotels();
+    console.log("📄 hotels route loaded");
+    if (typeof window.initHotels === "function") {
+        window.initHotels();
     }
 });
 
 app.route("#flights", function () {
-    console.log("Route: flights");
-    if (typeof initFlights === "function") {
-        initFlights();
+    console.log("📄 flights route loaded");
+    if (typeof window.initFlights === "function") {
+        window.initFlights();
     }
 });
 
@@ -176,9 +176,6 @@ app.route("#profile", function () {
 });
 
 app.run();
-
-
-
 
         // app.route('#booking', function () {
         //     console.log("Route detected: booking");

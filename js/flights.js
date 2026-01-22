@@ -1,6 +1,6 @@
 console.log("flights.js loaded");
 
-async function initFlights() {
+window.initFlights = async function (){
 
     console.log("initFlights called");
     const flightList = document.getElementById("flight-list");

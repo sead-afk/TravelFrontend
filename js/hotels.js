@@ -1,6 +1,6 @@
 console.log("hotels.js loaded");
 
-async function initHotels() {
+window.initHotels = async function (){
 
     console.log("initHotels called");
     const hotelList = document.getElementById("hotel-list");
