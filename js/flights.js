@@ -1,4 +1,4 @@
-console.log("flights.js loaded");
+console.log("flights.js loaded, window.initFlights =", typeof window.initFlights);
 
 window.initFlights = async function (){
 

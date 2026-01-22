@@ -1,4 +1,4 @@
-console.log("hotels.js loaded");
+console.log("hotels.js loaded, window.initHotels =", typeof window.initHotels);
 
 window.initHotels = async function (){
 
