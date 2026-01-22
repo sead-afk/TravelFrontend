@@ -1,14 +1,19 @@
+console.log("register.js loaded");
 
-
-//document.addEventListener("DOMContentLoaded", () => {
+function initRegister() {
     const registerForm = document.getElementById("registerForm");
     const registerError = document.getElementById("registerError");
 
-    registerForm.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Prevent the form from submitting traditionally
+    // 🔒 Guard: only run on register page
+    if (!registerForm) {
+        console.log("registerForm not found, register.js aborted");
+        return;
+    }
 
-        //const userType = document.getElementById("userType").value;
-        const userType = "USER"
+    registerForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const userType = "USER";
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
         const email = document.getElementById("email").value;
@@ -16,66 +21,51 @@
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
 
-        console.log("Password:", password);
-        console.log("Confirm Password:", confirmPassword);
+        const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-__+.]).{8,}$/;
 
-        // Strong password regex
-        //const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d^#@$!%*?&]{8,}$/;
-        //new reg
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-__+.]).{8,}$/;
-
-        // Validate password strength
         if (!passwordRegex.test(password)) {
-            registerError.textContent = "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+            registerError.textContent =
+                "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.";
             return;
         }
 
-        // Validate passwords match
         if (password !== confirmPassword) {
             registerError.textContent = "Passwords do not match.";
             return;
         }
 
-        const registerUrl = `${window.API_BASE_URL}/api/auth/register`;
-        const bodyJson= JSON.stringify(
-            { userType:userType,
-                firstName:firstName,
-                lastName: lastName,
-                email:email,
-                username: email,
-                password: password,
-                uniqueUsername: username
-        });
-
         try {
-            const response = await fetch(registerUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: bodyJson,
-            });
-
-            console.log(`Response status: ${response.status}`);
+            const response = await fetch(
+                `${window.API_BASE_URL}/api/auth/register`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userType,
+                        firstName,
+                        lastName,
+                        email,
+                        username: email,
+                        password,
+                        uniqueUsername: username,
+                    }),
+                }
+            );
 
             if (!response.ok) {
-                if (response.status === 409) {
-                    const errorText = await response.text(); // Get error message from the backend
-                    registerError.textContent = errorText; // Display the error
-                } else {
-                    registerError.textContent = "An unexpected error occurred. Please try again.";
-                }
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error("Registration failed");
             }
 
-            const data = await response.json();
-            console.log("Response data:", data);
-
-            alert("Registration successful! Redirecting to home...");
-            location.hash = "#login";
-        } catch (error) {
-            console.error("Error during registration:", error);
-            registerError.textContent = "Unable to connect to the server. Please try again later.";
+            alert("Registration successful!");
+            window.location.hash = "#login";
+        } catch (err) {
+            console.error(err);
+            registerError.textContent = "Registration failed.";
         }
     });
-//});
+}
+
+//  SPA-safe hook
+document.addEventListener("spapp:page:loaded", initRegister);
+
