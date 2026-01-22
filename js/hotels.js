@@ -1,7 +1,10 @@
 console.log("hotels.js loaded");
 
 async function initHotels() {
+
+    console.log("initHotels called");
     const hotelList = document.getElementById("hotel-list");
+    console.log("hotel-list element:", hotelList);
     const searchInput = document.getElementById("hotel-search-input");
 
     if (!hotelList || !searchInput) {
@@ -15,9 +18,11 @@ async function initHotels() {
         const res = await fetch(`${API_BASE_URL}/api/hotels`);
         const hotels = await res.json();
 
-        console.log("Hotels loaded:", hotels);
+        console.log("hotels from API:", hotels);
 
         renderHotels(hotels);
+
+        console.log("renderHotels called");
 
         searchInput.oninput = () => {
             const q = searchInput.value.toLowerCase();
@@ -35,6 +40,7 @@ async function initHotels() {
 }
 
 function renderHotels(hotels) {
+    console.log("hotels rendering", hotels.length, "hotels");
     const hotelList = document.getElementById("hotel-list");
     hotelList.innerHTML = "";
 

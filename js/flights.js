@@ -1,7 +1,10 @@
 console.log("flights.js loaded");
 
 async function initFlights() {
+
+    console.log("initFlights called");
     const flightList = document.getElementById("flight-list");
+    console.log("flight-list element:", flightList);
     const searchInput = document.getElementById("flight-search-input");
 
     if (!flightList || !searchInput) {
@@ -15,9 +18,11 @@ async function initFlights() {
         const res = await fetch(`${API_BASE_URL}/api/flights`);
         const flights = await res.json();
 
-        console.log("Flights loaded:", flights);
+        console.log("flights from API:", flights);
 
         renderFlights(flights);
+
+        console.log("renderFlights called");
 
         searchInput.oninput = () => {
             const q = searchInput.value.toLowerCase();
@@ -36,6 +41,7 @@ async function initFlights() {
 }
 
 function renderFlights(flights) {
+    console.log("flights rendering", flights.length, "flights");
     const flightList = document.getElementById("flight-list");
     flightList.innerHTML = "";
 
