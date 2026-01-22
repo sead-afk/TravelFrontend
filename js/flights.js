@@ -1,92 +1,54 @@
-
-/* ===============================
-   flights.js — SPA SAFE VERSION
-   =============================== */
-
 console.log("flights.js loaded");
 
-/* -------------------------------
-   SPA INIT ENTRY POINT
--------------------------------- */
-function initFlights() {
-    console.log("initFlights() called");
-
+async function initFlights() {
     const flightList = document.getElementById("flight-list");
     const searchInput = document.getElementById("flight-search-input");
 
-    // Abort if this page is not active
     if (!flightList || !searchInput) {
-        console.warn("flight-list not found. flights.js aborted.");
+        console.log("Flights DOM not ready, aborting");
         return;
     }
 
-    const API_URL = `${window.API_BASE_URL}/api/flights`;
+    console.log("Initializing flights page");
 
-    fetch(API_URL)
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to fetch flights");
-            return res.json();
-        })
-        .then(flights => {
-            console.log("Flights loaded:", flights);
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/flights`);
+        const flights = await res.json();
 
-            renderFlights(flights, flightList);
+        console.log("Flights loaded:", flights);
 
-            // Search filter
-            searchInput.oninput = () => {
-                const term = searchInput.value.toLowerCase();
-                const filtered = flights.filter(f =>
-                    f.airline.toLowerCase().includes(term) ||
-                    f.departure.toLowerCase().includes(term) ||
-                    f.arrival.toLowerCase().includes(term)
-                );
-                renderFlights(filtered, flightList);
-            };
-        })
-        .catch(err => {
-            console.error(err);
-            flightList.innerHTML =
-                `<p class="text-danger">Failed to load flights.</p>`;
-        });
+        renderFlights(flights);
+
+        searchInput.oninput = () => {
+            const q = searchInput.value.toLowerCase();
+            renderFlights(
+                flights.filter(f =>
+                    f.airline.toLowerCase().includes(q) ||
+                    f.departure.toLowerCase().includes(q) ||
+                    f.arrival.toLowerCase().includes(q)
+                )
+            );
+        };
+
+    } catch (err) {
+        console.error("Failed to load flights", err);
+    }
 }
 
-/* -------------------------------
-   RENDER FLIGHT CARDS
--------------------------------- */
-function renderFlights(flights, flightList) {
+function renderFlights(flights) {
+    const flightList = document.getElementById("flight-list");
     flightList.innerHTML = "";
 
-    if (!flights.length) {
-        flightList.innerHTML = "<p>No flights found.</p>";
-        return;
-    }
-
     flights.forEach(flight => {
-        const card = document.createElement("div");
-        card.className = "col-md-4 mb-4";
-
-        card.innerHTML = `
-            <div class="card shadow h-100">
-                <div class="card-body text-center">
-                    <h5 class="card-title text-primary">${flight.airline}</h5>
-                    <p class="mb-1">
-                        <strong>${flight.departure}</strong>
-                        →
-                        <strong>${flight.arrival}</strong>
-                    </p>
-                    <p class="text-muted">
-                        ${flight.departureTime} – ${flight.arrivalTime}
-                    </p>
-                    <p class="font-weight-bold">${flight.price}$</p>
+        flightList.innerHTML += `
+            <div class="col-md-4 mb-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5>${flight.airline}</h5>
+                        <p>${flight.departure} → ${flight.arrival}</p>
+                    </div>
                 </div>
             </div>
         `;
-
-        flightList.appendChild(card);
     });
 }
-
-/* -------------------------------
-   EXPOSE INIT FOR SPA ROUTER
--------------------------------- */
-window.initFlights = initFlights;

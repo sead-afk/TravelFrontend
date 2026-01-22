@@ -149,48 +149,37 @@
 
 <script>
     let app = $.spapp({
-        templateDir: 'pages/'
-    });
+    templateDir: 'pages/'
+});
 
-    /* -------------------------------
-       DEFAULT ROUTES
-    -------------------------------- */
-    app.route("", function () {
-        window.location.hash = "#hotels";
-    });
+app.route("", function () {
+    window.location.hash = "#hotels";
+});
 
-    app.route("#", function () {
-        window.location.hash = "#hotels";
-    });
+app.route("#", function () {
+    window.location.hash = "#hotels";
+});
 
-    /* -------------------------------
-       HOTELS ROUTE
-    -------------------------------- */
-    app.route("#hotels", function () {
-        console.log("Route: hotels");
-        if (window.initHotels) {
-            window.initHotels();
-        }
-    });
+app.route("#hotels", function () {
+    console.log("Route: hotels");
+    if (typeof initHotels === "function") {
+        initHotels();
+    }
+});
 
-    /* -------------------------------
-       FLIGHTS ROUTE
-    -------------------------------- */
-    app.route("#flights", function () {
-        console.log("Route: flights");
-        if (window.initFlights) {
-            window.initFlights();
-        }
-    });
+app.route("#flights", function () {
+    console.log("Route: flights");
+    if (typeof initFlights === "function") {
+        initFlights();
+    }
+});
 
-    /* -------------------------------
-       PROFILE (unchanged)
-    -------------------------------- */
-    app.route("#profile", function () {
-        loadUserProfile();
-    });
+app.route("#profile", function () {
+    loadUserProfile();
+});
 
-    app.run();
+app.run();
+
 
 
 
