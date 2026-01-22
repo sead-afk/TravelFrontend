@@ -1,102 +1,92 @@
 
-document.addEventListener("DOMContentLoaded", () => {
-    const flightList = document.getElementById("flight-list");
-    const flightSearchInput = document.getElementById("flight-search-input");
+/* ===============================
+   flights.js — SPA SAFE VERSION
+   =============================== */
 
-    // Abort if we're not on the flights page
-    if (!flightList) {
+console.log("flights.js loaded");
+
+/* -------------------------------
+   SPA INIT ENTRY POINT
+-------------------------------- */
+function initFlights() {
+    console.log("initFlights() called");
+
+    const flightList = document.getElementById("flight-list");
+    const searchInput = document.getElementById("flight-search-input");
+
+    // Abort if this page is not active
+    if (!flightList || !searchInput) {
         console.warn("flight-list not found. flights.js aborted.");
         return;
     }
 
-    const FLIGHT_API_URL = `${window.API_BASE_URL}/api/flights`;
+    const API_URL = `${window.API_BASE_URL}/api/flights`;
 
-    let allFlights = [];
-
-    /* =========================
-       FETCH FLIGHTS
-    ========================= */
-    fetch(FLIGHT_API_URL)
+    fetch(API_URL)
         .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            if (!res.ok) throw new Error("Failed to fetch flights");
             return res.json();
         })
-        .then(data => {
-            allFlights = data;
-            renderFlights(allFlights);
+        .then(flights => {
+            console.log("Flights loaded:", flights);
+
+            renderFlights(flights, flightList);
+
+            // Search filter
+            searchInput.oninput = () => {
+                const term = searchInput.value.toLowerCase();
+                const filtered = flights.filter(f =>
+                    f.airline.toLowerCase().includes(term) ||
+                    f.departure.toLowerCase().includes(term) ||
+                    f.arrival.toLowerCase().includes(term)
+                );
+                renderFlights(filtered, flightList);
+            };
         })
         .catch(err => {
-            console.error("Error fetching flight data:", err);
+            console.error(err);
             flightList.innerHTML =
                 `<p class="text-danger">Failed to load flights.</p>`;
         });
+}
 
-    /* =========================
-       SEARCH
-    ========================= */
-    if (flightSearchInput) {
-        flightSearchInput.addEventListener("input", () => {
-            const term = flightSearchInput.value.toLowerCase();
-            const filtered = allFlights.filter(f =>
-                f.airline.toLowerCase().includes(term) ||
-                f.departure.toLowerCase().includes(term) ||
-                f.arrival.toLowerCase().includes(term)
-            );
-            renderFlights(filtered);
-        });
+/* -------------------------------
+   RENDER FLIGHT CARDS
+-------------------------------- */
+function renderFlights(flights, flightList) {
+    flightList.innerHTML = "";
+
+    if (!flights.length) {
+        flightList.innerHTML = "<p>No flights found.</p>";
+        return;
     }
 
-    /* =========================
-       RENDER FLIGHTS
-    ========================= */
-    function renderFlights(flights) {
-        flightList.innerHTML = "";
+    flights.forEach(flight => {
+        const card = document.createElement("div");
+        card.className = "col-md-4 mb-4";
 
-        if (!flights.length) {
-            flightList.innerHTML = "<p>No flights found.</p>";
-            return;
-        }
-
-        flights.forEach(flight => {
-            const card = document.createElement("div");
-            card.className = "col-md-4 mb-4";
-
-            card.innerHTML = `
-                <div class="card shadow">
-                    <div class="card-body text-center">
-                        <h5 class="text-primary">${flight.airline}</h5>
-                        <p class="mb-1">
-                            <strong>${flight.departure}</strong>
-                            →
-                            <strong>${flight.arrival}</strong>
-                        </p>
-                        <p class="text-muted">
-                            ${flight.departureTime} - ${flight.arrivalTime}
-                        </p>
-                        <p class="font-weight-bold">$${flight.price}</p>
-
-                        <button
-                            class="btn btn-primary book-flight-btn"
-                            data-flight-id="${flight.id}">
-                            Book Flight
-                        </button>
-                    </div>
+        card.innerHTML = `
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">${flight.airline}</h5>
+                    <p class="mb-1">
+                        <strong>${flight.departure}</strong>
+                        →
+                        <strong>${flight.arrival}</strong>
+                    </p>
+                    <p class="text-muted">
+                        ${flight.departureTime} – ${flight.arrivalTime}
+                    </p>
+                    <p class="font-weight-bold">${flight.price}$</p>
                 </div>
-            `;
+            </div>
+        `;
 
-            flightList.appendChild(card);
-        });
-    }
-
-    /* =========================
-       BOOK FLIGHT (PLACEHOLDER)
-       (you can expand later)
-    ========================= */
-    flightList.addEventListener("click", e => {
-        const btn = e.target.closest(".book-flight-btn");
-        if (!btn) return;
-
-        const flightId = btn.dataset.flightId;
-        alert(`Flight booking not implemented yet (ID: ${flightId})`);
+        flightList.appendChild(card);
     });
-});
+}
+
+/* -------------------------------
+   EXPOSE INIT FOR SPA ROUTER
+-------------------------------- */
+window.initFlights = initFlights;

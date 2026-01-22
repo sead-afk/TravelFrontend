@@ -149,37 +149,65 @@
 
 <script>
     let app = $.spapp({
-        templateDir: 'pages/' // Directory containing your SPA pages
+        templateDir: 'pages/'
     });
+
+    /* -------------------------------
+       DEFAULT ROUTES
+    -------------------------------- */
     app.route("", function () {
-        console.log("Default route loaded (redirect to #hotels)");
-        window.location.hash = "#hotels"; // Redirect to the default route
+        window.location.hash = "#hotels";
     });
 
     app.route("#", function () {
-        console.log("Empty hash detected (redirect to #hotels)");
-        window.location.hash = "#hotels"; // Redirect to the default route
+        window.location.hash = "#hotels";
     });
 
-    app.route("#profile", function() {
-        // This callback is called after profile.html is loaded.
+    /* -------------------------------
+       HOTELS ROUTE
+    -------------------------------- */
+    app.route("#hotels", function () {
+        console.log("Route: hotels");
+        if (window.initHotels) {
+            window.initHotels();
+        }
+    });
+
+    /* -------------------------------
+       FLIGHTS ROUTE
+    -------------------------------- */
+    app.route("#flights", function () {
+        console.log("Route: flights");
+        if (window.initFlights) {
+            window.initFlights();
+        }
+    });
+
+    /* -------------------------------
+       PROFILE (unchanged)
+    -------------------------------- */
+    app.route("#profile", function () {
         loadUserProfile();
     });
 
-    // app.route('#booking', function () {
-    //     console.log("Route detected: booking");
-    //     const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
-    //     const type = hashParams.get('type');
-    //     const hotelId = hashParams.get('hotelId');
-    //     const hotelName = decodeURIComponent(hashParams.get('hotelName'));
-    //
-    //     console.log("Type:", type, "Hotel ID:", hotelId, "Hotel Name:", hotelName);
-    //
-    //     // Call initializeBookingForm or other functions
-    //     initializeBookingForm(type, hotelId, hotelName);
-    // });
     app.run();
-    //console.log("Router initialized. Current hash:", window.location.hash);
+
+
+
+        // app.route('#booking', function () {
+        //     console.log("Route detected: booking");
+        //     const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+        //     const type = hashParams.get('type');
+        //     const hotelId = hashParams.get('hotelId');
+        //     const hotelName = decodeURIComponent(hashParams.get('hotelName'));
+        //
+        //     console.log("Type:", type, "Hotel ID:", hotelId, "Hotel Name:", hotelName);
+        //
+        //     // Call initializeBookingForm or other functions
+        //     initializeBookingForm(type, hotelId, hotelName);
+        // });
+        app.run();
+        //console.log("Router initialized. Current hash:", window.location.hash);
 </script>
 <!--<script src="js/login.js"></script>-->
 </body>
