@@ -197,30 +197,55 @@ async function submitHotelBooking() {
 
 function loadFlightSeats(flightId) {
     const seatSelect = document.getElementById("seat-select");
-    if (!seatSelect) return;
+    if (!seatSelect) {
+        console.error('seat-select element not found');
+        return;
+    }
 
+    console.log('Loading seats for flight:', flightId);
     seatSelect.innerHTML = "<option value=''>Loading seats...</option>";
     seatSelect.disabled = true;
 
-    fetch(`${window.API_BASE_URL}/api/flights/${flightId}/tickets`)
+    // Try fetching the flight first, then get tickets from it
+    fetch(`${window.API_BASE_URL}/api/flights/${flightId}`)
         .then(response => {
+            console.log('Flight fetch response:', response);
             if (!response.ok) {
-                throw new Error("Failed to fetch seats");
+                throw new Error("Failed to fetch flight");
             }
             return response.json();
         })
-        .then(tickets => {
+        .then(flight => {
+            console.log('Flight data received:', flight);
+
+            // Check if tickets exist on the flight object
+            if (!flight.tickets || !Array.isArray(flight.tickets)) {
+                throw new Error("No tickets found for this flight");
+            }
+
             seatSelect.innerHTML = "<option value=''>-- Select a seat --</option>";
-            tickets.forEach(ticket => {
-                if (ticket.available) {
+
+            let availableSeats = 0;
+            flight.tickets.forEach(ticket => {
+                // Only show available seats
+                if (ticket.available !== false) {
                     const option = document.createElement("option");
                     option.value = ticket.id;
-                    option.textContent = `Seat ${ticket.seatNumber} - ${ticket.seatClass} - $${ticket.price}`;
+                    option.textContent = `Seat ${ticket.seatNumber} - ${ticket.seatClass || 'Economy'} - $${ticket.price}`;
                     option.setAttribute('data-price', ticket.price);
                     seatSelect.appendChild(option);
+                    availableSeats++;
                 }
             });
-            seatSelect.disabled = false;
+
+            console.log(`Loaded ${availableSeats} available seats`);
+
+            if (availableSeats === 0) {
+                seatSelect.innerHTML = "<option value=''>No seats available</option>";
+                seatSelect.disabled = true;
+            } else {
+                seatSelect.disabled = false;
+            }
         })
         .catch(error => {
             console.error("Error loading seats:", error);
@@ -234,8 +259,7 @@ function openFlightBookingModal(flightId, airline, flightNumber) {
 
     // Get modal elements
     const modalTitle = document.getElementById('flightBookingModalLabel');
-    const modalAirline = document.getElementById('airline');
-    const modalFlightInfo = document.getElementById('modal-flight-info'); // 🟢 Add if you have this
+    const modalFlightInfo = document.getElementById('modal-flight-info');
     const confirmBtn = document.getElementById('confirm-flight-booking');
 
     // Verify critical elements exist
@@ -248,12 +272,7 @@ function openFlightBookingModal(flightId, airline, flightNumber) {
     // Set the modal title
     modalTitle.textContent = `Book Flight: ${airline}`;
 
-    // 🟢 Set the airline info
-    if (modalAirline) {
-        modalAirline.textContent = `${airline} - ${flightNumber}`;
-    }
-
-    // 🟢 Set additional flight info if element exists
+    // 🟢 Set flight info - same format as hotel
     if (modalFlightInfo) {
         modalFlightInfo.innerHTML = `<strong>Flight:</strong> ${airline} ${flightNumber}`;
     }
