@@ -232,15 +232,41 @@ function loadFlightSeats(flightId) {
 function openFlightBookingModal(flightId, airline, flightNumber) {
     console.log("Opening flight booking modal for:", airline);
 
-    document.getElementById('flightBookingModalLabel').textContent = `Book Flight: ${airline}`;
-    document.getElementById('airline').textContent = `${airline} - ${flightNumber}`;
+    // Get modal elements
+    const modalTitle = document.getElementById('flightBookingModalLabel');
+    const modalAirline = document.getElementById('airline');
+    const modalFlightInfo = document.getElementById('modal-flight-info'); // 🟢 Add if you have this
+    const confirmBtn = document.getElementById('confirm-flight-booking');
 
+    // Verify critical elements exist
+    if (!modalTitle || !confirmBtn) {
+        console.error('Critical flight modal elements missing!');
+        alert('Flight booking modal not ready. Please refresh the page.');
+        return;
+    }
+
+    // Set the modal title
+    modalTitle.textContent = `Book Flight: ${airline}`;
+
+    // 🟢 Set the airline info
+    if (modalAirline) {
+        modalAirline.textContent = `${airline} - ${flightNumber}`;
+    }
+
+    // 🟢 Set additional flight info if element exists
+    if (modalFlightInfo) {
+        modalFlightInfo.innerHTML = `<strong>Flight:</strong> ${airline} ${flightNumber}`;
+    }
+
+    // Load seats for the selected flight
     loadFlightSeats(flightId);
 
-    const confirmBtn = document.getElementById('confirm-flight-booking');
+    // Store flight info for form submission
     confirmBtn.setAttribute('data-flight-id', flightId);
     confirmBtn.setAttribute('data-airline', airline);
+    confirmBtn.setAttribute('data-flight-number', flightNumber);
 
+    // Show the modal
     $('#flightBookingModal').modal('show');
 }
 
@@ -248,29 +274,49 @@ async function submitFlightBooking() {
     const confirmBtn = document.getElementById('confirm-flight-booking');
     const flightId = confirmBtn.getAttribute('data-flight-id');
     const airline = confirmBtn.getAttribute('data-airline');
+    const flightNumber = confirmBtn.getAttribute('data-flight-number');
     const ticketId = document.getElementById('seat-select').value;
 
+    // Validation
     if (!ticketId) {
         alert('Please select a seat');
         return;
     }
 
+    // Check authentication
     const token = localStorage.getItem('authToken');
     const username = localStorage.getItem('username');
 
     if (!token || !username) {
-        alert('Please log in to make a booking');
-        $('#flightBookingModal').modal('hide');
-        window.location.hash = '#login';
+        const shouldLogin = confirm(
+            'You need to log in to book a flight.\n\n' +
+            'Click OK to go to the login page, or Cancel to stay here.'
+        );
+
+        if (shouldLogin) {
+            // Optionally save booking details
+            sessionStorage.setItem('pendingBooking', JSON.stringify({
+                type: 'flight',
+                flightId,
+                airline,
+                flightNumber,
+                ticketId
+            }));
+
+            $('#flightBookingModal').modal('hide');
+            window.location.hash = '#login';
+        }
         return;
     }
 
+    // Get ticket price
     const ticketPrice = parseFloat(
         document.getElementById('seat-select')
             .selectedOptions[0]
             .getAttribute('data-price') || 0
     );
 
+    // Prepare booking data
     const bookingData = {
         username: username,
         type: 'FLIGHT',
@@ -281,6 +327,7 @@ async function submitFlightBooking() {
 
     console.log('Submitting flight booking:', bookingData);
 
+    // Show loading state
     confirmBtn.disabled = true;
     confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
 
@@ -302,13 +349,19 @@ async function submitFlightBooking() {
         const result = await response.json();
         console.log('Flight booking successful:', result);
 
-        alert(`Flight booking confirmed!\n\nAirline: ${airline}\nTotal: $${ticketPrice.toFixed(2)}\n\nThank you!`);
+        // Success!
+        alert(
+            `Flight booking confirmed!\n\n` +
+            `Flight: ${airline} ${flightNumber}\n` +
+            `Total: $${ticketPrice.toFixed(2)}\n\n` +
+            `Thank you for your booking!`
+        );
 
         $('#flightBookingModal').modal('hide');
 
     } catch (error) {
         console.error('Flight booking error:', error);
-        alert(`Booking failed: ${error.message}`);
+        alert(`Booking failed: ${error.message}\n\nPlease try again.`);
     } finally {
         confirmBtn.disabled = false;
         confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirm Booking';

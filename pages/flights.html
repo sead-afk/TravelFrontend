@@ -1,21 +1,19 @@
 
 
 
-<div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Available Flights</h1>
+<h1 class="h3 mb-4 text-gray-800">Available Flights</h1>
 
-    <!-- Search Bar -->
-    <div class="mb-4">
-        <input
-                type="text"
-                id="flight-search-input"
-                class="form-control"
-                placeholder="Search flights by airline, departure, or arrival"
-        />
-    </div>
-
-    <div class="row" id="flight-list">
-        <!-- Flight cards injected here -->
-    </div>
+<div class="form-group mb-4">
+    <input
+            type="text"
+            id="flight-search-input"
+            class="form-control"
+            placeholder="Search by airline, flight number, or airport"
+    >
 </div>
+
+<div class="row" id="flight-list">
+    <!-- Flight cards injected here -->
+</div>
+
 <script src="../js/flights.js"></script>
