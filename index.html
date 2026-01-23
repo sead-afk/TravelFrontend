@@ -158,14 +158,16 @@ app.route("#", function () {
 });
 
 app.route("#hotels", function () {
-    console.log("📄 hotels route loaded");
+    console.log("#hotels route activated");
+    console.log("typeof window.initHotels =", typeof window.initHotels);
     if (typeof window.initHotels === "function") {
         window.initHotels();
     }
 });
 
 app.route("#flights", function () {
-    console.log("📄 flights route loaded");
+    console.log("#flights route activated");
+    console.log("typeof window.initFlights =", typeof window.initFlights);
     if (typeof window.initFlights === "function") {
         window.initFlights();
     }
