@@ -2,7 +2,7 @@ console.log("flights.js loaded, window.initFlights =", typeof window.initFlights
 
 window.initFlights = async function (){
 
-    console.log("initFlights called");
+    console.log("initFlights EXECUTED, flightList =", document.getElementById("flight-list"));
     const flightList = document.getElementById("flight-list");
     console.log("flight-list element:", flightList);
     const searchInput = document.getElementById("flight-search-input");

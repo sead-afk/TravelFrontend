@@ -2,7 +2,7 @@ console.log("hotels.js loaded, window.initHotels =", typeof window.initHotels);
 
 window.initHotels = async function (){
 
-    console.log("initHotels called");
+    console.log("initHotels EXECUTED, hotelList =", document.getElementById("hotel-list"));
     const hotelList = document.getElementById("hotel-list");
     console.log("hotel-list element:", hotelList);
     const searchInput = document.getElementById("hotel-search-input");
