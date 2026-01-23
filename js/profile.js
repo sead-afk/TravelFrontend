@@ -105,8 +105,8 @@ export async function loadUserProfile() {
             //console.log("BOOKING ID: ",booking.details,"ROOM: ",room);
             const rowHtml = `
                         <td>${hotel.name}</td>
-                        <td>${booking.startDate}</td>
-                        <td>${booking.endDate}</td>
+                        <td>${booking.checkInFate}</td>
+                        <td>${booking.checkOutDate}</td>
                         <td>${room ? room.roomNumber : 'N/A'}</td>
                         <td>${room ? room.amenities.join(', ') : 'N/A'}</td>
                         <td>${booking.amount}</td>
@@ -225,20 +225,20 @@ export async function openEditBookingModal(bookingId, type) {
         if (type === "HOTEL") {
             // Get hotel modal elements (for HOTEL bookings)
             const bookingIdElem = document.getElementById("edit-hotel-booking-id");
-            const startDateElem = document.getElementById("edit-hotel-start-date");
-            const endDateElem = document.getElementById("edit-hotel-end-date");
+            const checkInFateElem = document.getElementById("edit-hotel-check-in-date");
+            const checkOutDateElem = document.getElementById("edit-hotel-check-out-date");
             const amountElem = document.getElementById("edit-hotel-amount");
             const hotelDropdown = document.getElementById("edit-hotel-dropdown");
             const roomDropdown = document.getElementById("edit-room-dropdown");
 
-            if (!bookingIdElem || !startDateElem || !endDateElem || !amountElem || !hotelDropdown || !roomDropdown) {
+            if (!bookingIdElem || !checkInFateElem || !checkOutDateElem || !amountElem || !hotelDropdown || !roomDropdown) {
                 throw new Error("One or more hotel modal elements not found. Please check your modal HTML.");
             }
 
             // Populate editable fields
             bookingIdElem.value = booking.id || booking._id;
-            startDateElem.value = booking.startDate;
-            endDateElem.value = booking.endDate;
+            checkInFateElem.value = booking.checkInFate;
+            checkOutDateElem.value = booking.checkOutDate;
             amountElem.value = booking.amount;
 
             // Set hotel dropdown to only display the current hotel (read-only)
@@ -303,10 +303,10 @@ function recalcHotelAmount() {
     if (!roomDropdown || roomDropdown.selectedIndex === -1) return;
     const selectedOption = roomDropdown.options[roomDropdown.selectedIndex];
     const price = parseFloat(selectedOption.getAttribute("data-price"));
-    const startDate = document.getElementById("edit-hotel-start-date").value;
-    const endDate = document.getElementById("edit-hotel-end-date").value;
-    if (!startDate || !endDate) return;
-    const days = Math.floor((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+    const checkInFate = document.getElementById("edit-hotel-check-in-date").value;
+    const checkOutDate = document.getElementById("edit-hotel-check-out-date").value;
+    if (!checkInFate || !checkOutDate) return;
+    const days = Math.floor((new Date(checkOutDate) - new Date(checkInFate)) / (1000 * 60 * 60 * 24));
     document.getElementById("edit-hotel-amount").value = price * days;
 }
 
@@ -326,8 +326,8 @@ async function submitEditBooking(booking, type) {
         }
         let updatedBooking = {};
         if (type === "HOTEL") {
-            const startDate = document.getElementById("edit-hotel-start-date").value;
-            const endDate = document.getElementById("edit-hotel-end-date").value;
+            const checkInFate = document.getElementById("edit-hotel-check-in-date").value;
+            const checkOutDate = document.getElementById("edit-hotel-check-out-date").value;
             const amountStr = document.getElementById("edit-hotel-amount").value;
             const roomId = document.getElementById("edit-room-dropdown").value;
             updatedBooking = {
@@ -337,8 +337,8 @@ async function submitEditBooking(booking, type) {
                 details: roomId,
                 type: booking.type,
                 bookingDate: booking.bookingDate,   // use original data
-                startDate: startDate,
-                endDate: endDate,
+                checkInFate: checkInFate,
+                checkOutDate: checkOutDate,
                 amount: parseFloat(amountStr)
             };
         } else if (type === "FLIGHT") {

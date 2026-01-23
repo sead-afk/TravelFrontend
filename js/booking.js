@@ -113,8 +113,8 @@ async function submitHotelBooking() {
         type: 'HOTEL',
         resourceid: hotelId,
         details: roomId,
-        startDate: checkInDate,
-        endDate: checkOutDate,
+        checkInFate: checkInDate,
+        checkOutDate: checkOutDate,
         amount: totalAmount
     };
 
