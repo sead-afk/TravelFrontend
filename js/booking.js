@@ -39,25 +39,43 @@ function loadHotelRooms(hotelId) {
 function openHotelBookingModal(hotelId, hotelName) {
     console.log("Opening booking modal for:", hotelName);
 
+    // Get modal elements
+    const modalTitle = document.getElementById('bookingModalLabel');
+    const modalHotelName = document.getElementById('modal-hotel-name'); // 🟢 Add this
+    const confirmBtn = document.getElementById('confirm-booking');
+    const checkInInput = document.getElementById('check-in-date');
+    const checkOutInput = document.getElementById('check-out-date');
+
+    // Verify critical elements exist
+    if (!modalTitle || !confirmBtn) {
+        console.error('Critical modal elements missing!');
+        alert('Booking modal not ready. Please refresh the page.');
+        return;
+    }
+
     // Set the modal title
-    document.getElementById('bookingModalLabel').textContent = `Book Your Stay at ${hotelName}`;
+    modalTitle.textContent = `Book Your Stay at ${hotelName}`;
+
+    // 🟢 Set the hotel name in the modal body
+    if (modalHotelName) {
+        modalHotelName.innerHTML = `<strong>Hotel:</strong> ${hotelName}`;
+    }
 
     // Load rooms for the selected hotel
     loadHotelRooms(hotelId);
 
     // Store hotel info for form submission
-    const confirmBtn = document.getElementById('confirm-booking');
     confirmBtn.setAttribute('data-hotel-id', hotelId);
     confirmBtn.setAttribute('data-hotel-name', hotelName);
 
-    // Set min date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('check-in-date').setAttribute('min', today);
-    document.getElementById('check-out-date').setAttribute('min', today);
-
-    // Reset form
-    document.getElementById('check-in-date').value = '';
-    document.getElementById('check-out-date').value = '';
+    // Set date constraints
+    if (checkInInput && checkOutInput) {
+        const today = new Date().toISOString().split('T')[0];
+        checkInInput.setAttribute('min', today);
+        checkOutInput.setAttribute('min', today);
+        checkInInput.value = '';
+        checkOutInput.value = '';
+    }
 
     // Show the modal
     $('#bookingModal').modal('show');
@@ -90,9 +108,26 @@ async function submitHotelBooking() {
     const username = localStorage.getItem('username');
 
     if (!token || !username) {
-        alert('Please log in to make a booking');
-        $('#bookingModal').modal('hide');
-        window.location.hash = '#login';
+        // 🟢 Better UX: Ask user if they want to login
+        const shouldLogin = confirm(
+            'You need to log in to make a booking.\n\n' +
+            'Click OK to go to the login page, or Cancel to stay here.'
+        );
+
+        if (shouldLogin) {
+            // Save booking details to resume later (optional)
+            sessionStorage.setItem('pendingBooking', JSON.stringify({
+                type: 'hotel',
+                hotelId,
+                hotelName,
+                roomId,
+                checkInDate,
+                checkOutDate
+            }));
+
+            $('#bookingModal').modal('hide');
+            window.location.hash = '#login';
+        }
         return;
     }
 
