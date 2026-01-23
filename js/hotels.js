@@ -1,11 +1,9 @@
 console.log("hotels.js loaded");
 
-// Auto-initialize when the hotels section is in the DOM
 function initHotelsPage() {
     const hotelList = document.getElementById("hotel-list");
     const searchInput = document.getElementById("hotel-search-input");
 
-    // Guard: only run if elements exist
     if (!hotelList || !searchInput) {
         return;
     }
@@ -30,20 +28,27 @@ function initHotelsPage() {
             };
         } catch (err) {
             console.error("Failed to load hotels", err);
+            hotelList.innerHTML = '<div class="col-12"><div class="alert alert-danger">Failed to load hotels.</div></div>';
         }
     }
 
     function renderHotels(hotels) {
         hotelList.innerHTML = "";
+
+        if (hotels.length === 0) {
+            hotelList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No hotels found.</p></div>';
+            return;
+        }
+
         hotels.forEach(hotel => {
             hotelList.innerHTML += `
                 <div class="col-md-4 mb-4">
-                    <div class="card shadow">
-                        <div class="card-body">
+                    <div class="card shadow h-100">
+                        <div class="card-body d-flex flex-column">
                             <h5 class="card-title">${hotel.name}</h5>
-                            <p class="card-text text-muted">${hotel.location}</p>
-                            <p class="card-text">${hotel.description || 'Experience comfort and luxury'}</p>
-                            <button class="btn btn-primary btn-block book-hotel-btn" 
+                            <p class="card-text text-muted"><i class="fas fa-map-marker-alt"></i> ${hotel.location}</p>
+                            <p class="card-text">${hotel.description || 'Experience comfort and luxury.'}</p>
+                            <button class="btn btn-primary btn-block mt-auto book-hotel-btn" 
                                     data-hotel-id="${hotel.id}" 
                                     data-hotel-name="${hotel.name}">
                                 <i class="fas fa-calendar-check"></i> Book Now
@@ -54,7 +59,6 @@ function initHotelsPage() {
             `;
         });
 
-        // Attach event listeners to booking buttons
         attachBookingListeners();
     }
 
@@ -64,57 +68,19 @@ function initHotelsPage() {
             button.addEventListener('click', function() {
                 const hotelId = this.getAttribute('data-hotel-id');
                 const hotelName = this.getAttribute('data-hotel-name');
-                openBookingModal(hotelId, hotelName);
+
+                // Call the global booking function from booking.js
+                if (typeof window.openHotelBookingModal === 'function') {
+                    window.openHotelBookingModal(hotelId, hotelName);
+                } else {
+                    console.error('Booking function not loaded');
+                }
             });
         });
-    }
-
-    function openBookingModal(hotelId, hotelName) {
-        // Set the modal title
-        document.getElementById('bookingModalLabel').textContent = `Book Your Stay at ${hotelName}`;
-
-        // Load rooms for the selected hotel
-        loadHotelRooms(hotelId);
-
-        // Store hotel info for form submission
-        document.getElementById('confirm-booking').setAttribute('data-hotel-id', hotelId);
-        document.getElementById('confirm-booking').setAttribute('data-hotel-name', hotelName);
-
-        // Show the modal
-        $('#bookingModal').modal('show');
-    }
-
-    function loadHotelRooms(hotelId) {
-        const roomSelect = document.getElementById("room-select");
-        roomSelect.innerHTML = "<option>Loading rooms...</option>";
-
-        fetch(`${API_BASE_URL}/api/hotels/${hotelId}/rooms`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch rooms");
-                }
-                return response.json();
-            })
-            .then(rooms => {
-                roomSelect.innerHTML = "";
-                rooms.forEach(room => {
-                    const option = document.createElement("option");
-                    option.value = room.id;
-                    option.textContent = `${room.name} - $${room.price} per night`;
-                    roomSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error loading rooms:", error);
-                roomSelect.innerHTML = "<option>Error loading rooms</option>";
-            });
     }
 
     loadHotels();
 }
 
-// Run when script first loads (in case DOM already ready)
 initHotelsPage();
-
-// Also run when SPAPP loads a new page
 $(document).on('spapp:page:loaded', initHotelsPage);
