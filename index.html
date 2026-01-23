@@ -146,38 +146,23 @@
 
 <script>
     let app = $.spapp({
-    templateDir: 'pages/'
-});
+        templateDir: 'pages/'
+    });
 
-app.route("", function () {
-    window.location.hash = "#hotels";
-});
+    app.route("#hotels", function () {
+        console.log("#hotels route activated");
+        // No need to manually call init - the script will handle it
+    });
 
-app.route("#", function () {
-    window.location.hash = "#hotels";
-});
+    app.route("#flights", function () {
+        console.log("#flights route activated");
+    });
 
-app.route("#hotels", function () {
-    console.log("#hotels route activated");
-    console.log("typeof window.initHotels =", typeof window.initHotels);
-    if (typeof window.initHotels === "function") {
-        window.initHotels();
-    }
-});
+    app.route("#profile", function () {
+        loadUserProfile();
+    });
 
-app.route("#flights", function () {
-    console.log("#flights route activated");
-    console.log("typeof window.initFlights =", typeof window.initFlights);
-    if (typeof window.initFlights === "function") {
-        window.initFlights();
-    }
-});
-
-app.route("#profile", function () {
-    loadUserProfile();
-});
-
-app.run();
+    app.run();
 
         // app.route('#booking', function () {
         //     console.log("Route detected: booking");
@@ -191,7 +176,6 @@ app.run();
         //     // Call initializeBookingForm or other functions
         //     initializeBookingForm(type, hotelId, hotelName);
         // });
-        app.run();
         //console.log("Router initialized. Current hash:", window.location.hash);
 </script>
 <!--<script src="js/login.js"></script>-->
