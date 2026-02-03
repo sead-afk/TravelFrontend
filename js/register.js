@@ -66,6 +66,23 @@ function initRegister() {
     });
 }
 
+// OAuth2 Login Handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const facebookLoginBtn = document.getElementById('facebookLoginBtn');
+
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', function() {
+            window.location.href = `${window.API_BASE_URL}/oauth2/authorization/google`;
+        });
+    }
+
+    if (facebookLoginBtn) {
+        facebookLoginBtn.addEventListener('click', function() {
+            window.location.href = `${window.API_BASE_URL}/oauth2/authorization/facebook`;
+        });
+    }
+});
 //  SPA-safe hook
 document.addEventListener("spapp:page:loaded", initRegister);
 

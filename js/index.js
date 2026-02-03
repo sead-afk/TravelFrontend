@@ -120,10 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
             authLinks.appendChild(logoutItem);
 
             document.getElementById("logoutLink").addEventListener("click", () => {
-                localStorage.removeItem("jwt");
-                localStorage.removeItem("userId");
-                renderAuthLinks(); // Refresh the UI after logout
-                location.hash = "#login"; // Redirect to login page
+                clearAuthData(); // ← Use helper function
+                renderAuthLinks();
+                location.hash = "#login";
             });
         } else {
             profileNavItem.style.display = "none"; // Hide Profile link
@@ -166,6 +165,9 @@ function handleRouteChange() {
     }
     // Additional route handling can go here for #hotels, #flights, etc.
 }
+
+console.log('index.js loaded');
+
 
 
 

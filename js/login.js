@@ -50,13 +50,10 @@ loginForm.addEventListener("submit", async (event) => {
 
         if (data.jwt) {
             console.log("Login successful, redirecting...");
-            localStorage.setItem("jwt", data.jwt); // Save token to localStorage
-            console.log("JWT saved to localStorage:", localStorage.getItem("jwt")); // Verify storage
+            saveAuthData(data.jwt); // ← Use helper function
 
-            // Call renderAuthLinks to update navbar state
-            renderAuthLinks(); // This updates the navbar
-
-            location.hash = "#flights"; // Redirect to flights page
+            renderAuthLinks();
+            location.hash = "#flights";
         } else {
             console.error("Login response missing JWT:", data);
             if (loginError) loginError.textContent = "Login failed. No token received.";
@@ -67,7 +64,48 @@ loginForm.addEventListener("submit", async (event) => {
     }
 });
 
+// OAuth2 Login Handlers
+// OAuth2 Login Handlers
+function initOAuth2Buttons() {
+    console.log('Initializing OAuth2 buttons...');
 
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const facebookLoginBtn = document.getElementById('facebookLoginBtn');
+
+    console.log('Google button found:', !!googleLoginBtn);
+    console.log('Facebook button found:', !!facebookLoginBtn);
+
+    if (googleLoginBtn) {
+        // Clone to remove old event listeners
+        const newGoogleBtn = googleLoginBtn.cloneNode(true);
+        googleLoginBtn.parentNode.replaceChild(newGoogleBtn, googleLoginBtn);
+
+        newGoogleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Google button clicked!');
+            const url = `${window.API_BASE_URL}/oauth2/authorization/google`;
+            console.log('Redirecting to:', url);
+            window.location.href = url;
+        });
+    }
+
+    /*if (facebookLoginBtn) {
+        // Clone to remove old event listeners
+        const newFacebookBtn = facebookLoginBtn.cloneNode(true);
+        facebookLoginBtn.parentNode.replaceChild(newFacebookBtn, facebookLoginBtn);
+
+        newFacebookBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Facebook button clicked!');
+            const url = `${window.API_BASE_URL}/oauth2/authorization/facebook`;
+            console.log('Redirecting to:', url);
+            window.location.href = url;
+        });
+    }*/
+}
+
+// Initialize on first load
+setTimeout(initOAuth2Buttons, 200);
 
 
 // });

@@ -23,8 +23,8 @@ function loadHotelRooms(hotelId) {
             rooms.forEach(room => {
                 const option = document.createElement("option");
                 option.value = room.id;
-                option.textContent = `${room.name || room.roomNumber} - $${room.price} per night`;
-                option.setAttribute('data-price', room.price);
+                option.textContent = `${room.name || room.roomNumber} - $${room.pricePerNight} per night`;
+                option.setAttribute('data-price', room.pricePerNight);
                 roomSelect.appendChild(option);
             });
             roomSelect.disabled = false;
@@ -104,32 +104,23 @@ async function submitHotelBooking() {
     }
 
     // Check authentication
-    const token = localStorage.getItem('authToken');
-    const username = localStorage.getItem('username');
-
-    if (!token || !username) {
-        // 🟢 Better UX: Ask user if they want to login
+    if (!isLoggedIn()) {
         const shouldLogin = confirm(
             'You need to log in to make a booking.\n\n' +
             'Click OK to go to the login page, or Cancel to stay here.'
         );
 
         if (shouldLogin) {
-            // Save booking details to resume later (optional)
-            sessionStorage.setItem('pendingBooking', JSON.stringify({
-                type: 'hotel',
-                hotelId,
-                hotelName,
-                roomId,
-                checkInDate,
-                checkOutDate
-            }));
-
+            // ... save pending booking
             $('#bookingModal').modal('hide');
             window.location.hash = '#login';
         }
         return;
     }
+
+// User is logged in, get credentials
+    const token = localStorage.getItem('jwt');
+    const username = localStorage.getItem('username');
 
     // Calculate total amount
     const roomPrice = parseFloat(
@@ -148,7 +139,7 @@ async function submitHotelBooking() {
         type: 'HOTEL',
         resourceid: hotelId,
         details: roomId,
-        checkInFate: checkInDate,
+        checkInDate: checkInDate,
         checkOutDate: checkOutDate,
         amount: totalAmount
     };
@@ -160,7 +151,7 @@ async function submitHotelBooking() {
     confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
 
     try {
-        const response = await fetch(`${window.API_BASE_URL}/api/bookings/hotel`, {
+        const response = await fetch(`${window.API_BASE_URL}/api/bookings/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -303,30 +294,23 @@ async function submitFlightBooking() {
     }
 
     // Check authentication
-    const token = localStorage.getItem('authToken');
-    const username = localStorage.getItem('username');
-
-    if (!token || !username) {
+    if (!isLoggedIn()) {
         const shouldLogin = confirm(
-            'You need to log in to book a flight.\n\n' +
+            'You need to log in to make a booking.\n\n' +
             'Click OK to go to the login page, or Cancel to stay here.'
         );
 
         if (shouldLogin) {
-            // Optionally save booking details
-            sessionStorage.setItem('pendingBooking', JSON.stringify({
-                type: 'flight',
-                flightId,
-                airline,
-                flightNumber,
-                ticketId
-            }));
-
-            $('#flightBookingModal').modal('hide');
+            // ... save pending booking
+            $('#bookingModal').modal('hide');
             window.location.hash = '#login';
         }
         return;
     }
+
+// User is logged in, get credentials
+    const token = localStorage.getItem('jwt');
+    const username = localStorage.getItem('username');
 
     // Get ticket price
     const ticketPrice = parseFloat(
@@ -351,7 +335,7 @@ async function submitFlightBooking() {
     confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
 
     try {
-        const response = await fetch(`${window.API_BASE_URL}/api/bookings/flight`, {
+        const response = await fetch(`${window.API_BASE_URL}/api/bookings/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

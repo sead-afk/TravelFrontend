@@ -11,7 +11,7 @@ app.get('*', (req, res) => {
 });
 
 // Use the dynamic port provided by Railway
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 console.log(`Attempting to start on port: ${PORT}`);
 app.listen(PORT, () => {
     console.log(`Frontend server running on port ${PORT}`);

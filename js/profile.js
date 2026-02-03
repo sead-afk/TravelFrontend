@@ -105,7 +105,7 @@ export async function loadUserProfile() {
             //console.log("BOOKING ID: ",booking.details,"ROOM: ",room);
             const rowHtml = `
                         <td>${hotel.name}</td>
-                        <td>${booking.checkInFate}</td>
+                        <td>${booking.checkInDate}</td>
                         <td>${booking.checkOutDate}</td>
                         <td>${room ? room.roomNumber : 'N/A'}</td>
                         <td>${room ? room.amenities.join(', ') : 'N/A'}</td>
@@ -180,22 +180,47 @@ function showDeleteModal(bookingId, row) {
 async function deleteBooking(bookingId, row) {
     try {
         console.log("Attempting to delete booking:", bookingId);
+
         const token = localStorage.getItem("jwt");
+        console.log("Token exists:", !!token);
+
         const response = await fetch(`${window.API_BASE_URL}/api/bookings/${bookingId}`, {
             method: "DELETE",
             headers: {
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
         });
+
+        console.log("Delete response status:", response.status);
+
         if (!response.ok) {
-            throw new Error(`Delete failed: ${response.status}`);
+            // Get the detailed error message
+            const responseText = await response.text();
+            console.error("Delete response body:", responseText);
+
+            // Try to parse as JSON
+            let errorMessage = `Delete failed: ${response.status}`;
+            try {
+                const errorData = JSON.parse(responseText);
+                console.error("Delete error data:", errorData);
+                errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch (e) {
+                // Not JSON, use raw text
+                errorMessage = responseText || errorMessage;
+            }
+
+            throw new Error(errorMessage);
         }
+
+        console.log("Booking deleted successfully");
         alert("Booking deleted successfully");
         row.remove();
         await loadUserProfile();
+
     } catch (error) {
         console.error("Error deleting booking:", error);
-        alert("Error deleting booking. Please try again.");
+        alert(`Error deleting booking: ${error.message}`);
     }
 }
 
@@ -225,19 +250,19 @@ export async function openEditBookingModal(bookingId, type) {
         if (type === "HOTEL") {
             // Get hotel modal elements (for HOTEL bookings)
             const bookingIdElem = document.getElementById("edit-hotel-booking-id");
-            const checkInFateElem = document.getElementById("edit-hotel-check-in-date");
+            const checkInDateElem = document.getElementById("edit-hotel-check-in-date");
             const checkOutDateElem = document.getElementById("edit-hotel-check-out-date");
             const amountElem = document.getElementById("edit-hotel-amount");
             const hotelDropdown = document.getElementById("edit-hotel-dropdown");
             const roomDropdown = document.getElementById("edit-room-dropdown");
 
-            if (!bookingIdElem || !checkInFateElem || !checkOutDateElem || !amountElem || !hotelDropdown || !roomDropdown) {
+            if (!bookingIdElem || !checkInDateElem || !checkOutDateElem || !amountElem || !hotelDropdown || !roomDropdown) {
                 throw new Error("One or more hotel modal elements not found. Please check your modal HTML.");
             }
 
             // Populate editable fields
             bookingIdElem.value = booking.id || booking._id;
-            checkInFateElem.value = booking.checkInFate;
+            checkInDateElem.value = booking.checkInDate;
             checkOutDateElem.value = booking.checkOutDate;
             amountElem.value = booking.amount;
 
@@ -303,10 +328,10 @@ function recalcHotelAmount() {
     if (!roomDropdown || roomDropdown.selectedIndex === -1) return;
     const selectedOption = roomDropdown.options[roomDropdown.selectedIndex];
     const price = parseFloat(selectedOption.getAttribute("data-price"));
-    const checkInFate = document.getElementById("edit-hotel-check-in-date").value;
+    const checkInDate = document.getElementById("edit-hotel-check-in-date").value;
     const checkOutDate = document.getElementById("edit-hotel-check-out-date").value;
-    if (!checkInFate || !checkOutDate) return;
-    const days = Math.floor((new Date(checkOutDate) - new Date(checkInFate)) / (1000 * 60 * 60 * 24));
+    if (!checkInDate || !checkOutDate) return;
+    const days = Math.floor((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
     document.getElementById("edit-hotel-amount").value = price * days;
 }
 
@@ -326,7 +351,7 @@ async function submitEditBooking(booking, type) {
         }
         let updatedBooking = {};
         if (type === "HOTEL") {
-            const checkInFate = document.getElementById("edit-hotel-check-in-date").value;
+            const checkInDate = document.getElementById("edit-hotel-check-in-date").value;
             const checkOutDate = document.getElementById("edit-hotel-check-out-date").value;
             const amountStr = document.getElementById("edit-hotel-amount").value;
             const roomId = document.getElementById("edit-room-dropdown").value;
@@ -337,7 +362,7 @@ async function submitEditBooking(booking, type) {
                 details: roomId,
                 type: booking.type,
                 bookingDate: booking.bookingDate,   // use original data
-                checkInFate: checkInFate,
+                checkInDate: checkInDate,
                 checkOutDate: checkOutDate,
                 amount: parseFloat(amountStr)
             };
@@ -464,7 +489,7 @@ async function loadAvailableRoomsForEdit(hotelId, currentRoomId) {
                 option.selected = true;
                 recalcHotelAmount(); // Recalculate amount if needed.
             }
-            option.setAttribute("data-price", room.pricePerNight);
+            option.setAttribute("data-price", room.pricePerNightPerNight);
             roomDropdown.appendChild(option);
         });
         roomDropdown.onchange = recalcHotelAmount;
