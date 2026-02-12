@@ -5,7 +5,7 @@
 /**
  * Loads and renders the user's profile data, including their bookings.
  */
-export async function loadUserProfile() {
+async function loadUserProfile() {
     try {
         const token = localStorage.getItem('jwt');
         if (!token) {
