@@ -231,7 +231,7 @@ async function deleteBooking(bookingId, row) {
  * @param {string} bookingId - The unique identifier for the booking.
  * @param {string} type - The booking type (e.g., "HOTEL" or "FLIGHT").
  */
-export async function openEditBookingModal(bookingId, type) {
+async function openEditBookingModal(bookingId, type) {
     try {
         const token = localStorage.getItem("jwt");
         if (!token) {
