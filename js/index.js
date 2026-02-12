@@ -94,7 +94,6 @@
 
 // Define renderAuthLinks function in index.js
 // Define renderAuthLinks function in index.js
-import { loadUserProfile, openEditBookingModal } from "./profile.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const authLinks = document.getElementById("authLinks");
