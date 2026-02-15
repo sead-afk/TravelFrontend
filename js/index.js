@@ -167,7 +167,71 @@ function handleRouteChange() {
 
 console.log('index.js loaded');
 
+$(document).ready(function () {
+    console.log('Initializing Travel app with SPapp...');
 
+    // Clean OAuth2 token BEFORE SPA initializes
+    (function() {
+        const hash = window.location.hash;
+        const tokenMatch = hash.match(/[?&]token=([^&]+)/);
+
+        if (tokenMatch) {
+            const token = tokenMatch[1];
+            saveAuthData(token); // Use helper function
+
+            console.log('OAuth2 token saved');
+
+            // Clean hash
+            window.location.hash = hash.split('?')[0];
+
+            // Update navbar
+            setTimeout(function() {
+                if (typeof renderAuthLinks === 'function') {
+                    renderAuthLinks();
+                }
+            }, 100);
+
+            setTimeout(function() {
+                if (typeof renderAuthLinks === 'function') {
+                    renderAuthLinks();
+                }
+            }, 500);
+        }
+    })();
+
+    // Initialize SPA
+    let app = $.spapp({
+        templateDir: 'pages/'
+    });
+
+    app.route("#hotels", function () {
+        console.log("#hotels route activated");
+        // No need to manually call init - the script will handle it
+    });
+
+    app.route("#flights", function () {
+        console.log("#flights route activated");
+    });
+
+    app.route("#profile", function () {
+        loadUserProfile();
+    });
+
+    // Add login route to reinitialize OAuth2 buttons
+    app.route("#login", function () {
+        console.log("#login route activated");
+        // Reinitialize OAuth2 buttons when login page loads
+        setTimeout(function() {
+            if (typeof initOAuth2Buttons === 'function') {
+                initOAuth2Buttons();
+            }
+        }, 100);
+    });
+
+    app.run();
+
+    console.log('SPApp initialized and running');
+})
 
 
 
