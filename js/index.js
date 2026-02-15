@@ -95,6 +95,13 @@
 // Define renderAuthLinks function in index.js
 // Define renderAuthLinks function in index.js
 
+window.addEventListener('load', function() {
+    console.log('Page loaded - checking init functions:');
+    console.log('initLoginPage:', typeof window.initLoginPage);
+    console.log('initHotelsPage:', typeof window.initHotelsPage);
+    console.log('initFlightsPage:', typeof window.initFlightsPage);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     const authLinks = document.getElementById("authLinks");
     const profileNavItem = document.getElementById("profileNavItem");
@@ -167,8 +174,8 @@ function handleRouteChange() {
 
 console.log('index.js loaded');
 
-$(document).ready(function () {
-    console.log('Initializing Travel app with SPapp...');
+$(document).ready(function() {
+    console.log('Initializing Travel App with SPApp...');
 
     // Clean OAuth2 token BEFORE SPA initializes
     (function() {
@@ -177,14 +184,10 @@ $(document).ready(function () {
 
         if (tokenMatch) {
             const token = tokenMatch[1];
-            saveAuthData(token); // Use helper function
-
+            saveAuthData(token);
             console.log('OAuth2 token saved');
-
-            // Clean hash
             window.location.hash = hash.split('?')[0];
 
-            // Update navbar
             setTimeout(function() {
                 if (typeof renderAuthLinks === 'function') {
                     renderAuthLinks();
@@ -201,37 +204,156 @@ $(document).ready(function () {
 
     // Initialize SPA
     let app = $.spapp({
-        templateDir: 'pages/'
+        templateDir: 'pages/',
+        defaultView: 'home'
     });
 
-    app.route("#hotels", function () {
-        console.log("#hotels route activated");
-        // No need to manually call init - the script will handle it
+    // ======================================
+    // Route Definitions
+    // ======================================
+
+    app.route({
+        view: 'home',
+        load: 'home.html'
     });
 
-    app.route("#flights", function () {
-        console.log("#flights route activated");
+    app.route({
+        view: 'login',
+        load: 'login.html',
+        onCreate: function() {
+            console.log('=== LOGIN ROUTE ACTIVATED ===');
+            console.log('Checking for initLoginPage:', typeof window.initLoginPage);
+
+            setTimeout(function() {
+                console.log('Calling initLoginPage...');
+
+                if (typeof window.initLoginPage === 'function') {
+                    window.initLoginPage();
+                } else {
+                    console.error('ERROR: initLoginPage is not a function!');
+                    console.log('Available functions:', Object.keys(window).filter(k => k.startsWith('init')));
+                }
+            }, 150);
+        }
     });
 
-    app.route("#profile", function () {
-        loadUserProfile();
+    app.route({
+        view: 'register',
+        load: 'register.html',
+        onCreate: function() {
+            console.log('=== REGISTER ROUTE ACTIVATED ===');
+
+            setTimeout(function() {
+                if (typeof window.initRegisterPage === 'function') {
+                    window.initRegisterPage();
+                } else {
+                    console.error('ERROR: initRegisterPage is not a function!');
+                }
+            }, 150);
+        }
     });
 
-    // Add login route to reinitialize OAuth2 buttons
-    app.route("#login", function () {
-        console.log("#login route activated");
-        // Reinitialize OAuth2 buttons when login page loads
-        setTimeout(function() {
-            if (typeof initOAuth2Buttons === 'function') {
-                initOAuth2Buttons();
+    app.route({
+        view: 'hotels',
+        load: 'hotels.html',
+        onCreate: function() {
+            console.log('=== HOTELS ROUTE ACTIVATED ===');
+            console.log('Checking for initHotelsPage:', typeof window.initHotelsPage);
+
+            setTimeout(function() {
+                if (typeof window.initHotelsPage === 'function') {
+                    window.initHotelsPage();
+                } else {
+                    console.error('ERROR: initHotelsPage is not a function!');
+                    console.log('Trying to load hotels manually...');
+
+                    // Temporary fallback - manually load hotels
+                    loadHotelsManually();
+                }
+            }, 150);
+        }
+    });
+
+    app.route({
+        view: 'flights',
+        load: 'flights.html',
+        onCreate: function() {
+            console.log('=== FLIGHTS ROUTE ACTIVATED ===');
+
+            setTimeout(function() {
+                if (typeof window.initFlightsPage === 'function') {
+                    window.initFlightsPage();
+                } else {
+                    console.error('ERROR: initFlightsPage is not a function!');
+                }
+            }, 150);
+        }
+    });
+
+    app.route({
+        view: 'profile',
+        load: 'profile.html',
+        onCreate: function() {
+            console.log('=== PROFILE ROUTE ACTIVATED ===');
+
+            if (typeof loadUserProfile === 'function') {
+                loadUserProfile();
             }
-        }, 100);
+        }
     });
 
+    app.route({
+        view: 'bookings',
+        load: 'bookings.html',
+        onCreate: function() {
+            console.log('=== BOOKINGS ROUTE ACTIVATED ===');
+
+            setTimeout(function() {
+                if (typeof window.initBookingsPage === 'function') {
+                    window.initBookingsPage();
+                }
+            }, 150);
+        }
+    });
+
+    // Temporary manual hotels loader
+    function loadHotelsManually() {
+        console.log('Loading hotels manually...');
+
+        fetch(`${window.API_BASE_URL}/api/hotels`)
+            .then(r => r.json())
+            .then(hotels => {
+                console.log('Hotels fetched:', hotels);
+
+                const container = $('#hotelsContainer, .hotels-container, [data-hotels]');
+                if (container.length === 0) {
+                    console.error('No hotels container found!');
+                    return;
+                }
+
+                container.empty();
+                hotels.forEach(hotel => {
+                    container.append(`
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>${hotel.name}</h5>
+                                    <p>${hotel.description || ''}</p>
+                                    <p><strong>$${hotel.price}/night</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            })
+            .catch(err => console.error('Error loading hotels:', err));
+    }
+
+    // Run the app
     app.run();
 
     console.log('SPApp initialized and running');
-})
+});
 
 
 
