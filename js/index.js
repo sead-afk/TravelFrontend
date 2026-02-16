@@ -177,6 +177,8 @@ console.log('index.js loaded');
 $(document).ready(function() {
     console.log('Initializing Travel App with SPApp...');
 
+    // Wake backend immediately when app loads
+    wakeUpBackend();
     // Clean OAuth2 token BEFORE SPA initializes
     (function() {
         const hash = window.location.hash;
@@ -266,9 +268,6 @@ $(document).ready(function() {
                 } else {
                     console.error('ERROR: initHotelsPage is not a function!');
                     console.log('Trying to load hotels manually...');
-
-                    // Temporary fallback - manually load hotels
-                    loadHotelsManually();
                 }
             }, 150);
         }
