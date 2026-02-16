@@ -13,55 +13,37 @@ function renderFlights(flights, container) {
     }
 
     flights.forEach(flight => {
-        const departureDate = flight.departureTime ? new Date(flight.departureTime).toLocaleString() : 'N/A';
-        const arrivalDate = flight.arrivalTime ? new Date(flight.arrivalTime).toLocaleString() : 'N/A';
+        // Use the correct field names from your API
+        const departureTime = flight.departureTime || 'N/A';
+        const arrivalTime = flight.arrivalTime || 'N/A';
 
         container.innerHTML += `
-            <div class="col-md-6 mb-4">
+            <div class="col-md-4 mb-4">
                 <div class="card shadow h-100">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-plane"></i> ${flight.airline || 'Flight'}
-                            </h5>
-                            <span class="badge badge-primary">${flight.flightNumber || 'N/A'}</span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <small class="text-muted">From</small>
-                                    <h6 class="mb-0">${flight.origin || 'Unknown'}</h6>
-                                    <small>${departureDate}</small>
-                                </div>
-                                <i class="fas fa-arrow-right text-primary"></i>
-                                <div class="text-right">
-                                    <small class="text-muted">To</small>
-                                    <h6 class="mb-0">${flight.destination || 'Unknown'}</h6>
-                                    <small>${arrivalDate}</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <p class="card-text mb-1">
-                                <i class="fas fa-clock text-muted"></i> 
-                                <strong>Duration:</strong> ${flight.duration || 'N/A'}
+                        <h5 class="card-title">
+                            <i class="fas fa-plane"></i> ${flight.airline || 'Unknown Airline'}
+                        </h5>
+                        <p class="card-text">
+                            <strong>Flight:</strong> ${flight.flightNumber || 'N/A'}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-plane-departure"></i> <strong>${flight.departureAirport || 'Unknown'}</strong>
+                            <br>
+                            <i class="fas fa-plane-arrival"></i> <strong>${flight.arrivalAirport || 'Unknown'}</strong>
+                        </p>
+                        <p class="card-text text-muted">
+                            <i class="fas fa-clock"></i> 
+                            ${departureTime} - ${arrivalTime}
+                        </p>
+                        ${flight.price ? `
+                            <p class="card-text">
+                                <strong>Price:</strong> $${flight.price}
                             </p>
-                            <p class="card-text mb-1">
-                                <i class="fas fa-dollar-sign text-success"></i> 
-                                <strong>Price:</strong> $${flight.price || '0'}
-                            </p>
-                            ${flight.availableSeats ? `
-                                <p class="card-text mb-0">
-                                    <i class="fas fa-chair text-info"></i> 
-                                    <strong>Available Seats:</strong> ${flight.availableSeats}
-                                </p>
-                            ` : ''}
-                        </div>
-                        
+                        ` : ''}
                         <button class="btn btn-primary btn-block mt-auto book-flight-btn" 
                                 data-flight-id="${flight.id}" 
+                                data-airline="${flight.airline}"
                                 data-flight-number="${flight.flightNumber}">
                             <i class="fas fa-ticket-alt"></i> Book Flight
                         </button>
@@ -79,11 +61,12 @@ function attachFlightBookingListeners() {
     bookButtons.forEach(button => {
         button.addEventListener('click', function() {
             const flightId = this.getAttribute('data-flight-id');
+            const airline = this.getAttribute('data-airline');
             const flightNumber = this.getAttribute('data-flight-number');
 
             // Call the global booking function from booking.js
             if (typeof window.openFlightBookingModal === 'function') {
-                window.openFlightBookingModal(flightId, flightNumber);
+                window.openFlightBookingModal(flightId, airline, flightNumber);
             } else {
                 console.error('Flight booking function not loaded');
                 alert('Booking system not available. Please refresh the page.');
@@ -121,9 +104,9 @@ async function loadFlights(flightList, searchInput, allFlights) {
                 const query = searchInput.value.toLowerCase();
                 const filtered = allFlights.data.filter(f =>
                     (f.airline && f.airline.toLowerCase().includes(query)) ||
-                    (f.origin && f.origin.toLowerCase().includes(query)) ||
-                    (f.destination && f.destination.toLowerCase().includes(query)) ||
-                    (f.flightNumber && f.flightNumber.toLowerCase().includes(query))
+                    (f.flightNumber && f.flightNumber.toLowerCase().includes(query)) ||
+                    (f.departureAirport && f.departureAirport.toLowerCase().includes(query)) ||
+                    (f.arrivalAirport && f.arrivalAirport.toLowerCase().includes(query))
                 );
                 renderFlights(filtered, flightList);
             };
